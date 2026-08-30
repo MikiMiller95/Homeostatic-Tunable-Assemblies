@@ -9,7 +9,6 @@ This folder contains the simulation and plotting code for Figure 1. Run all comm
 - `Fig1SpikingSim.py` defines the long spiking-network simulation.
 - `RunFig1Spiking.py` runs the long simulations used for the mean weights and firing rates.
 - `Fig1.py` loads the generated data, creates the STDP and network panels, and saves `Fig1.pdf`.
-- `Fig1B.py` contains a separate rate-based plasticity-rule plotting helper; the current `Fig1.py` does not call it.
 - `helper_functions.py` contains shared connectivity and analysis utilities.
 
 ## Procedure
@@ -32,7 +31,7 @@ Generate the long plasticity simulations:
 python3 RunFig1Spiking.py
 ```
 
-Before running this step, make the output path in `RunFig1Spiking.py` match the path read by `Fig1.py`. The plotting script expects the files in `Fig1data_TauSTDP120ms/`, while the current runner writes them under `NewNewFig1data/`.
+Before running this step, make the output path in `RunFig1Spiking.py` match the path read by `Fig1.py`. The plotting script expects the files in `Fig1data_TauSTDP120ms/`, while the current runner writes them under `Fig1data/`.
 
 Finally, assemble the figure:
 
