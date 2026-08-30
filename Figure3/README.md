@@ -1,8 +1,7 @@
 [README.md](https://github.com/user-attachments/files/31621240/README.md)
 # Figure 3
 
-This directory contains the plotting code, simulation code, and helper functions used to generate `Fig3.pdf`. The files were relabeled from Figure 4 to Figure 3 and cleaned for readability without changing the simulation equations, analysis steps, plotted quantities, plotting parameters, or panel layout.
-
+This directory contains the plotting code, simulation code, and helper functions used to generate `Fig3.pdf`. 
 ## Directory contents
 
 ```text
