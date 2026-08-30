@@ -1,6 +1,6 @@
 # Figure 2, Row 3
 
-This directory reproduces the **third row of Figure 2 in the current paper**. It contains only the multi-pulse learning workflow that in the third row of Figure 2.
+This directory reproduces the **third row of Figure 2 in the paper**. It contains only the multi-pulse learning workflow that in the third row of Figure 2.
 
 ## What is plotted
 
@@ -10,7 +10,6 @@ From left to right, `Figure2Row3.pdf` contains:
 2. **Mean weights over time:** the normalized mean excitatory weight, $\bar{w}_{EE}/\bar{w}_{EE0}$, above the normalized mean inhibitory weight magnitude, $\bar{w}_{EI}/\bar{w}_{EI0}$. Line color indicates simulation time.
 3. **Weight-space trajectory during learning:** the trajectory of the mean $(w_{EE}, w_{EI})$ pair. The plasma gradient indicates simulation time, and the dashed red curve is loaded from the original line-attractor reference files.
 
-These are the learning panels now used as the third row of Figure 2 in the new paper.
 
 ## Files
 
@@ -23,7 +22,7 @@ These are the learning panels now used as the third row of Figure 2 in the new p
 The old single-pulse runner, pattern-completion runner, and spiking-inset plotting file are not needed for these panels and are therefore not included.
 
 ## Required reference files
-Coordinates for the simulated line attractor can be found in the following text files. If you wish to rerun and obtain these coordinates yourself, you just need to resimulate all of the initial conditions in the asynchronous state after some burnin. These text files are just to plot the line attractor for reference to see the drift along the line while perturbing the system. 
+Coordinates for the simulated line attractor can be found in the following text files. If you wish to rerun and obtain these coordinates yourself, you just need to rerun the simulations for all of the initial conditions in the asynchronous state after some burnin. These text files are just to plot the line attractor for reference to see the drift along the line while perturbing the system. 
 
 - `final_wEE_list_simulation.txt`
 - `final_wEI_list_simulation.txt`
