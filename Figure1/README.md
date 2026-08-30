@@ -17,7 +17,7 @@ This folder contains the simulation and plotting code for Figure 1. Run all comm
 Create the data folders:
 
 ```bash
-mkdir -p Fig1Rastordata Fig1data_TauSTDP120ms Fig1data_TauSTDP150ms
+mkdir -p Fig1Rastordata Fig1data_TauSTDP120ms
 ```
 
 Generate the raster data:
