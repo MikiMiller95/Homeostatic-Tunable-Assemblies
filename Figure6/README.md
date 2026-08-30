@@ -120,31 +120,3 @@ The final command saves:
 Fig6.pdf
 ```
 
-## Remaining pre-existing regeneration blockers not fixed
-
-The supplied files still do **not** form a complete end-to-end regeneration pipeline without additional corrections. These issues were left unchanged so that the simulations, analyses, and plotted content were not silently altered.
-
-1. **The main simulation still generates too few seeds.** `RunFig6Spiking.py` uses `seeds = 5`, while `Fig6.py` loads seeds `0` through `19` for each of the six sigma values.
-
-2. **The main weight filenames use inconsistent plasticity timescales.** `RunFig6Spiking.py` saves its mean-weight files with `tauwee=225000` and `tauwei=75000`, whereas `Fig6.py` loads those files using `tauwee=450` and `tauwei=150`. The balance and reciprocity filenames in `Fig6.py` use the larger values, so this is not a single global rename.
-
-3. **`balance_index` is returned as `None` by `Fig6SpikingSim.py`.** `RunFig6Spiking.py` writes that value to CSV, and `Fig6.py` later attempts to read a numeric first column from the file.
-
-Because of these remaining blockers, the files were syntax-checked but the full simulations and final PDF were not regenerated as part of this cleanup.
-
-## Additional review notes not changed
-
-These are possible inconsistencies or cleanup candidates, not corrections applied to the code:
-
-- `Fig6.py` first assigns the integrated-drift title to `ax[1, 3]` and later overwrites that same title with `Mean wEE/w0 over Time`. Verify which title belongs on `ax[1, 2]` and which belongs on `ax[1, 3]`.
-- Text is added to `ax[1, 3]` using `ax[1, 2].transAxes` as its transform. Verify that the annotations are intended to use the neighboring axis coordinate system.
-- `Fig6.py` still loads `balance_idx` and `q_val` files even though the supplied plotting block that used them was inactive. Removing those reads would change the current file requirements, so they were retained.
-- `CorrelatedRastor.py` uses `tau_rprim` as a module-level global inside `spiking_sim()` rather than passing it as an argument. It works only when the file is run through its current top-level setup.
-- `generate_bernouilli_weight_array()` writes the nominal I-to-I block into `weights[:N_I, :N_I]`, which overlaps the upper-left block when `N_E == N_I`. The current simulations set `bernouilli = False`, so this branch is inactive for Figure 6.
-- `calculate_spike_count_covariance()` calls `bin_spike_trains()`, but that function is not defined in `helper_functions.py`. This helper is not called by the retained Figure 6 workflow.
-- `generate_weight_array()` uses `num_E` for both row and column block boundaries. That is consistent with the current `N_E = N_I = 500` simulations but should be reviewed before using unequal population sizes.
-- Several legacy counters, event-tracking arrays, plotting handles, and returned arrays appear unused. They were left active because removing executable statements could obscure whether they were intentionally retained for diagnostics.
-
-## Validation performed
-
-Every retained Python file passes `python -m py_compile`. The supplied `Fig7D(2).py` theory module was also compared with the cleaned `Fig6D.py` at the statement level after ignoring imports, comments/docstrings, and formatting-only changes.
