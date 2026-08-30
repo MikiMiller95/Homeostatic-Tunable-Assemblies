@@ -1,7 +1,7 @@
 [README.md](https://github.com/user-attachments/files/31622561/README.md)
 # Figure 7: correlated E/I input and synaptic drift
 
-This directory contains the cleaned code associated with **Figure 7**. The figure compares spiking-network simulations with population theory to show how correlations shared across excitatory and inhibitory external inputs shape synaptic drift.
+This directory contains the code associated with **Figure 7**. The figure compares spiking-network simulations with population theory to show how correlations shared across excitatory and inhibitory external inputs shape synaptic drift.
 
 The active plotting script fills four panels of a 2 × 3 canvas:
 
@@ -25,12 +25,6 @@ The upper-left and upper-middle axes are intentionally left blank for manuscript
 | `Driftdata/` | Expected location of the raster spike-train CSV files. | — |
 
 `requirements.txt` lists the Python packages imported by these files. The empty data directories are retained with `.gitkeep` files so that a fresh clone has the expected paths.
-
-## Important reproducibility limitation
-
-The supplied files are **not sufficient to regenerate all data loaded by `Fig7.py`**.
-
-`Fig7.py` requires the following long-simulation files for seeds 0–9 and each correlation value `c_x = 0.0, 0.2, 0.4, 0.6, 0.8, 1.0`:
 
 ```text
 Fig7data/mean_ee_weights_..._seed<S>.csv
