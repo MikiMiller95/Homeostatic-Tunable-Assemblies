@@ -1,4 +1,4 @@
-# Figure 5
+# Figure 4
 
 This directory contains the code used to generate `Fig5.pdf`. The script combines analytic calculations, rate-and-weight plasticity simulations, and precomputed convergence-basin grids in a 2 × 3 figure.
 
