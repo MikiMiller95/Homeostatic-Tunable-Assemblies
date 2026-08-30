@@ -1,8 +1,6 @@
 # Figure 2, Row 3
 
-This directory reproduces the **third row of Figure 2 in the current paper**. It contains only the multi-pulse learning workflow that previously produced the panels located at `ax[1,1]`, `ax[1,2]`, and `ax[1,3]` in `Fig3.pdf`.
-
-The simulation parameters, update equations, recorded quantities, analyses, and panel-specific plotting commands are unchanged. The code has only been isolated from the larger Figure 3 workflow, renamed for Figure 2 row 3, and reorganized with shorter comments and clearer sections.
+This directory reproduces the **third row of Figure 2 in the current paper**. It contains only the multi-pulse learning workflow that in the third row of Figure 2.
 
 ## What is plotted
 
