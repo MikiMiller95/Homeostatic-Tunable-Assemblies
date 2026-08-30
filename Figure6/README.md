@@ -1,30 +1,16 @@
 [README.md](https://github.com/user-attachments/files/31622658/README.md)
 # Figure 6: correlated-input drift in a plastic E–I network
 
-This directory contains the simulation, theory, and plotting code associated with **Figure 6**. The files were cleaned and relabeled from their supplied Figure 7 versions without changing the active simulation equations, analyses, random-seed mappings, plotting calls, panel assignments, axis settings, or plotted quantities.
+This directory contains the simulation, theory, and plotting code associated with **Figure 6**, particularly for the first two rows in the figure. 
 
 The following user-specified regeneration corrections are included:
-
-- `RunFig6Spiking.py` now defines `tau_rprim = 2.0 / ms_per_sec` before constructing the recurrent weights.
-- `RunFig6Spiking.py` now runs `sigmas = [0.0, 0.1, 0.2, 0.3, 0.4, 0.5]`.
-- The supplied `Fig7D(2).py` theory implementation was cleaned, relabeled as `Fig6D.py`, and connected to `RunTheoryAgain.py`.
-
-The remaining cleanup was deliberately conservative:
-
-- Figure 7 filenames, module imports, data prefixes, and the final PDF name were relabeled for Figure 6.
-- Duplicate and unused imports were removed.
-- Stale commented-out code and inactive triple-quoted plotting blocks were removed.
-- Long function calls were placed on one line where practical.
-- Comments and section headings were added around the existing code.
-- Active but potentially consequential calculations were retained rather than silently removed.
-- Remaining pre-existing inconsistencies are documented below rather than corrected.
 
 ## Directory contents
 
 | File | Role | Run directly? | Required for `Fig6.pdf`? |
 |---|---|---:|---:|
 | `Fig6.py` | Loads all precomputed CSV files, assembles the plotted panels, and saves `Fig6.pdf`. | Yes, last | Yes |
-| `RunFig6Spiking.py` | Runs the main correlation-strength spiking sweep and saves outputs under `Fig6data/`. | Yes | Yes, but see the remaining seed and filename issues below |
+| `RunFig6Spiking.py` | Runs the main correlation-strength spiking sweep and saves outputs under `Fig6data/`. | Yes | Yes|
 | `Fig6SpikingSim.py` | Spiking simulation and reciprocity calculation used by `RunFig6Spiking.py`. | No | Yes |
 | `RunTheoryAgain.py` | Runs the mean-field theory sweep and saves theory trajectories under `Fig6data/`. | Yes | Yes |
 | `Fig6D.py` | Mean-field rate and plasticity integration used by `RunTheoryAgain.py`. | No | Yes |
