@@ -50,7 +50,7 @@ for i in range(1, seeds):
         w_EE = .036 / factor
         w_EI = .036 / factor
         ctt = 0
-        loc = 'NewNewFig1'
+        loc = 'Fig1'
 
         # Run the spiking simulation without changing its arguments or seed mapping.
         time, track_W, track_W_mean, track_mean_rates, time_reduced, track_lam_E, track_lam_I, spike_trains_E, spike_trains_I, balance_index, cval = spiking_sim(normalize, axs, 4000 * i, c_x, sigma, ctt, tau_r, tau_ou, tau_STDP, tau_wee, tau_wei, N_E, N_I, T, dt, w_EE, w_EI, w_IE, w_II)
