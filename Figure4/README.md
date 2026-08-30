@@ -55,6 +55,4 @@ python Fig5.py
 
 The script writes `Fig5.pdf` to the current directory.
 
-## Reproducibility note
 
-The cleaned script changes only comments and organization. The executable Python token sequence, parameter values, simulations, analyses, and plotting commands are unchanged from the supplied file.
