@@ -81,20 +81,15 @@ for i in range(seeds):
         df_theory_lamb = pd.DataFrame(theory_lamb)
         df_theory_lamb.to_csv(f'{loc}data/lamb_theory_Ne_{N_E}_T{T}_wee{w_EE*factor}_wei{w_EI*factor}_wii{w_II*factor}_wie{w_IE*factor}_sigma{sigma}_cx{c_x}_taur{tau_r}_tauSTDP{tau_STDP}_tauou{tau_ou}_tauwee{tau_wee}_tauwei{tau_wei}_seed{i}.csv', index=False)
 
-        df_Wee_theory = pd.DataFrame(Wee_theory)
-        #df_Wee_theory.to_csv(f'{loc}data/W_theory_Ne_{N_E}_T{T}_wee{w_EE*factor}_wei{w_EI*factor}_wii{w_II*factor}_wie{w_IE*factor}_sigma{sigma}_cx{c_x}_taur{tau_r}_tauSTDP{tau_STDP}_tauou{tau_ou}_tauwee{tau_wee}_tauwei{tau_wei}_seed{i}.csv', index=False)
-        df_Wee_theory.to_csv(f'{loc}data/W_theory_Ne_{N_E}_T{T}_wee{w_EE}_wei{w_EI}_wii{w_II}_wie{w_IE}_sigma{sigma}_cx{c_x}_taur{tau_r}_tauSTDP{tau_STDP}_tauou{tau_ou}_tauwee{float(tau_wee * tau_rprim)}_tauwei{tau_wei * tau_rprim}_seed{i}.csv', index=False)
+        #df_Wee_theory = pd.DataFrame(Wee_theory)
+        #df_Wee_theory.to_csv(f'{loc}data/W_theory_Ne_{N_E}_T{T}_wee{w_EE}_wei{w_EI}_wii{w_II}_wie{w_IE}_sigma{sigma}_cx{c_x}_taur{tau_r}_tauSTDP{tau_STDP}_tauou{tau_ou}_tauwee{float(tau_wee * tau_rprim)}_tauwei{tau_wei * tau_rprim}_seed{i}.csv', index=False)
 
-        df_Wei_theory = pd.DataFrame(Wei_theory)
-        df_Wee_theory.to_csv(f'{loc}data/W_theory_Ne_{N_E}_T{T}_wee{w_EE}_wei{w_EI}_wii{w_II}_wie{w_IE}_sigma{sigma}_cx{c_x}_taur{tau_r}_tauSTDP{tau_STDP}_tauou{tau_ou}_tauwee{float(tau_wee * tau_rprim)}_tauwei{tau_wei * tau_rprim}_seed{i}.csv', index=False)
-        #df_Wei_theory.to_csv(f'{loc}data/Wei_theory_Ne_{N_E}_T{T}_wee{w_EE*factor}_wei{w_EI*factor}_wii{w_II*factor}_wie{w_IE*factor}_sigma{sigma}_cx{c_x}_taur{tau_r}_tauSTDP{tau_STDP}_tauou{tau_ou}_tauwee{tau_wee}_tauwei{tau_wei}_seed{i}.csv', index=False)
-        df_Wei_theory.to_csv(f'{loc}data/Wei_theory_Ne_{N_E}_T{T}_wee{w_EE}_wei{w_EI}_wii{w_II}_wie{w_IE}_sigma{sigma}_cx{c_x}_taur{tau_r}_tauSTDP{tau_STDP}_tauou{tau_ou}_tauwee{float(tau_wee * tau_rprim)}_tauwei{tau_wei * tau_rprim}_seed{i}.csv', index=False)
+        #df_Wei_theory = pd.DataFrame(Wei_theory)
+        #df_Wei_theory.to_csv(f'{loc}data/Wei_theory_Ne_{N_E}_T{T}_wee{w_EE}_wei{w_EI}_wii{w_II}_wie{w_IE}_sigma{sigma}_cx{c_x}_taur{tau_r}_tauSTDP{tau_STDP}_tauou{tau_ou}_tauwee{float(tau_wee * tau_rprim)}_tauwei{tau_wei * tau_rprim}_seed{i}.csv', index=False)
+        
         # Release the largest arrays before the next simulation.
         del balance_index
         del track_W_mean
         del df_ei_weights
         del df_ee_weights
-        del df_Wei_theory
-        del df_Wee_theory
         del track_W
-
