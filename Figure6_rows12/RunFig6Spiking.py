@@ -10,8 +10,7 @@ import pandas as pd
 
 from Fig6SpikingSim import spiking_sim
 
-seeds = 5
-print('hellow')
+seeds = 20
 sigmas = [0.0, 0.1, 0.2, 0.3, 0.4, 0.5]
 
 fig, axs = plt.subplots(2, 4, figsize=(12, 8), dpi=100)
