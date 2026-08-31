@@ -330,7 +330,7 @@ sigma = 0.
 dt = .1 / ms_per_sec
 time = np.linspace(0, T, int(T / dt))
 print(np.shape(time))
-loc = 'Fig3data_taur8ms'
+loc = 'Fig3data'
 w_EE = 16. / scale_factor * tau_rprim
 wee = w_EE
 w_EI = 25. / scale_factor * tau_rprim
