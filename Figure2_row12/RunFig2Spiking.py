@@ -53,7 +53,7 @@ for i in range(seeds):
             print('Nwie', N_E * w_IE)
 
             ctt = 0
-            loc = 'NewFig2data'
+            loc = 'Fig2data'
             time, track_W, track_W_mean, track_mean_rates, time_reduced, track_lam_E, track_lam_I, balance_index, cval = spiking_sim(normalize, axs, i, c_x, sigma, ctt, tau_r, tau_ou, tau_STDP, tau_wee, tau_wei, N_E, N_I, T, dt, w_EE, w_EI, w_IE, w_II)
 
             # Use the same scaled values as the plotting script when constructing filenames.
