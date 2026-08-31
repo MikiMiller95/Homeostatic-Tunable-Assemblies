@@ -41,8 +41,8 @@ w_IE          = 10. / scale_factor * tau_rprim
 w_II          = 10. / scale_factor * tau_rprim
 w_EX          = 20. / scale_factor * tau_rprim
 w_IX          = 20. / scale_factor * tau_rprim
-tau_wee       = 450
-tau_wei       = 150.
+tau_wee       = 225000
+tau_wei       = 75000
 tau_STDP      = 120 / 1000.
 tau_r         = 8.  / 1000
 tau_ou        = 8.   / 1000
@@ -52,7 +52,7 @@ time          = np.linspace(0, T, int(T / dt))
 loc           = 'Fig6'
 skip          = 2000
 time_reduced  = time[::skip]
-seeds         = 20
+seeds         = 1
 aE, aI, b     = 20, 20, 20.
 c_x           = 0.
 
@@ -175,9 +175,6 @@ for i, sigma in enumerate(sigmas):
     mean_wee_seeds   = np.zeros((seeds, len(time_reduced)))
     mean_theory_seeds = np.zeros((seeds, len(time_theory)))
     mean_wei_seeds   = np.zeros_like(mean_wee_seeds)
-    balance_idx = np.zeros((seeds, 2, len(time_reduced)))
-    q_rel = np.zeros((seeds,2, len(time_reduced)))
-
 
     for s in range(seeds):
         print('s',s)
@@ -201,11 +198,6 @@ for i, sigma in enumerate(sigmas):
                 k = 0
             if sigma==.5:
                 k=1
-            balance = pd.read_csv(f'{loc}data/balance_idx_{N}_T{T}_wee{w_EE_0}_wei{w_EI_0}_' f'wii{w_II}_wie{w_IE}_sigma{sigma}_cx{c_x}_'f'taur{tau_r}_tauSTDP{tau_STDP}_tauou{tau_ou}_' f'tauwee{float(tau_wee/tau_rprim)}_tauwei{float(tau_wei/tau_rprim)}_seed{s}.csv')
-            balance_idx[s,k] = balance.to_numpy()[:,0]
-
-            q = pd.read_csv( f'{loc}data/q_val_Ne_{N}_T{T}_wee{w_EE_0}_wei{w_EI_0}_' f'wii{w_II}_wie{w_IE}_sigma{sigma}_cx{c_x}_' f'taur{tau_r}_tauSTDP{tau_STDP}_tauou{tau_ou}_' f'tauwee{float(tau_wee/tau_rprim)}_tauwei{float(tau_wei/tau_rprim)}_seed{s}.csv')
-            q_rel[s,k] = q.to_numpy()[:,0]
 
 
         diff_sim = np.diff(mean_wee_seeds[s,idx_s:idx_e])
@@ -419,7 +411,7 @@ tau_STDP = 120. / ms_per_sec
 tau_wee = 225000
 tau_wei = 75000.
 c_x = 0.
-seeds=10
+seeds=1
 wee_init = 18. / np.sqrt(N_E) * tau_rprim
 wei_init = 18. / np.sqrt(N_E) * tau_rprim
 wie = 10. / np.sqrt(N_E) * tau_rprim
