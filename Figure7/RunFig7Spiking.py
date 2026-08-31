@@ -12,12 +12,12 @@ from Fig7SpikingSim import spiking_sim
 
 
 # Correlation sweep and seed range.
-seeds=60
+seeds=1
 print('hellow')
 sigma=.5
 c_xs = np.array([0.,.2,.4,.6,.8,1.])
 
-for i in range(19,seeds):
+for i in range(seeds):
     # The original runner does not pass axes to the simulation.
     axs = None
 
@@ -58,7 +58,7 @@ for i in range(19,seeds):
         # Run the simulation. The pre-existing argument and return-value
         # inconsistencies with Fig7SpikingSim.py are documented in the README
         # and are intentionally not corrected here.
-        time, track_W,track_W_mean, track_mean_rates, time_reduced, track_lam_E,track_lam_I,spike_trains_E, spike_trains_I, Wee_theory,Wei_theory,theory_lamb,balance_index, cval, q_val= spiking_sim(normalize,axs,35*i,c_x,sigma,ctt,tau_r, tau_ou,tau_STDP, tau_wee, tau_wei,N_E,N_I,T,dt,w_EE,w_EI,w_IE,w_II)
+        time, track_W,track_W_mean, track_mean_rates, time_reduced, track_lam_E,track_lam_I,spike_trains_E, spike_trains_I, Wee_theory,Wei_theory,theory_lamb,balance_index, cval, q_val= spiking_sim(normalize,axs,35*i,c_x,sigma,ctt,tau_rprim,tau_r, tau_ou,tau_STDP, tau_wee, tau_wei,N_E,N_I,T,dt,w_EE,w_EI,w_IE,w_II)
 
         # Save population rates and the auxiliary q-value output expected by
         # the original runner.
