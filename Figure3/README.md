@@ -30,7 +30,7 @@ Run all commands from this directory so that the relative imports and data paths
 
 
 ## Make data directories
-mkdir -p Fig3data RateDynamicsdata VaryaE
+```bash mkdir -p Fig3data RateDynamicsdata VaryaE ```
 
 ## Generate the simulation data
 
