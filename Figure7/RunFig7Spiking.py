@@ -27,31 +27,28 @@ for i in range(seeds):
         # Network and integration parameters.
         N_E = 500
         N_I = 500
-        T =150.
+        T = 110.
         ms_per_sec = 1000
-        dt = .2/ms_per_sec
+        dt = .1 / ms_per_sec
 
-        # Spike-response and plasticity parameters.
-        tau_ou = 8./ms_per_sec
-        tau_r =8./ms_per_sec
         normalize = True
         if normalize:
             tau_rprim=2./ms_per_sec
         else:
             tau_rprim=1.
 
-        tau_STDP =120./ms_per_sec
-        tau_wei = 75000.
-        tau_wee =225000.
-        print('tau_wee',tau_wee)
-        print('tau_wei',tau_wei)
+        tau_ou = 8. / ms_per_sec
+        tau_r = 8. / ms_per_sec
+        tau_STDP = 120. / ms_per_sec
+        tau_wei = 150. / tau_rprim
+        tau_wee = 450. / tau_rprim
 
-        # Initial recurrent weights.
-        factor =np.sqrt(N_E)
-        w_IE=.02/ factor
-        w_II=.02 / factor
-        w_EE=.036 / factor
-        w_EI=.036 / factor
+        factor = np.sqrt(N_E)
+        w_IE = 10. / factor * tau_rprim
+        w_II = 10. / factor * tau_rprim
+        w_EE = 18. / factor * tau_rprim
+        w_EI = 18. / factor * tau_rprim
+
         ctt=0
         loc='Fig7'
 
@@ -70,11 +67,13 @@ for i in range(seeds):
         mean_ei_weights = track_W_mean[1,:]
 
         df_ee_weights = pd.DataFrame(mean_ee_weights)
-        df_ee_weights.to_csv(f'{loc}data/mean_ee_weights_Ne_{N_E}_T{T}_wee{w_EE*factor}_wei{w_EI*factor}_wii{w_II*factor}_wie{w_IE*factor}_sigma{sigma}_cx{c_x}_taur{tau_r}_tauSTDP{tau_STDP}_tauou{tau_ou}_tauwee{tau_wee}_tauwei{tau_wei}_seed{i}.csv', index=False)
-
+        #df_ee_weights.to_csv(f'{loc}data/mean_ee_weights_Ne_{N_E}_T{T}_wee{w_EE*factor}_wei{w_EI*factor}_wii{w_II*factor}_wie{w_IE*factor}_sigma{sigma}_cx{c_x}_taur{tau_r}_tauSTDP{tau_STDP}_tauou{tau_ou}_tauwee{tau_wee}_tauwei{tau_wei}_seed{i}.csv', index=False)
+        df_ee_weights.to_csv(f'{loc}data/mean_ee_weights_Ne_{N_E}_T{T}_wee{w_EE}_wei{w_EI}_wii{w_II}_wie{w_IE}_sigma{sigma}_cx{c_x}_taur{tau_r}_tauSTDP{tau_STDP}_tauou{tau_ou}_tauwee{int(tau_wee * tau_rprim)}_tauwei{tau_wei * tau_rprim}_seed{i}.csv', index=False)
+        
         df_ei_weights = pd.DataFrame(mean_ei_weights)
-        df_ei_weights.to_csv(f'{loc}data/mean_ei_weights_Ne_{N_E}_T{T}_wee{w_EE*factor}_wei{w_EI*factor}_wii{w_II*factor}_wie{w_IE*factor}_sigma{sigma}_cx{c_x}_taur{tau_r}_tauSTDP{tau_STDP}_tauou{tau_ou}_tauwee{tau_wee}_tauwei{tau_wei}_seed{i}.csv', index=False)
-
+        #df_ei_weights.to_csv(f'{loc}data/mean_ei_weights_Ne_{N_E}_T{T}_wee{w_EE*factor}_wei{w_EI*factor}_wii{w_II*factor}_wie{w_IE*factor}_sigma{sigma}_cx{c_x}_taur{tau_r}_tauSTDP{tau_STDP}_tauou{tau_ou}_tauwee{tau_wee}_tauwei{tau_wei}_seed{i}.csv', index=False)
+        df_ei_weights.to_csv(f'{loc}data/mean_ei_weights_Ne_{N_E}_T{T}_wee{w_EE}_wei{w_EI}_wii{w_II}_wie{w_IE}_sigma{sigma}_cx{c_x}_taur{tau_r}_tauSTDP{tau_STDP}_tauou{tau_ou}_tauwee{int(tau_wee * tau_rprim)}_tauwei{tau_wei * tau_rprim}_seed{i}.csv', index=False)
+        
         # Save diagnostic and theory trajectories returned by the simulation.
         balance_index = pd.DataFrame(balance_index)
         balance_index.to_csv(f'{loc}data/balance_idx_{N_E}_T{T}_wee{w_EE*factor}_wei{w_EI*factor}_wii{w_II*factor}_wie{w_IE*factor}_sigma{sigma}_cx{c_x}_taur{tau_r}_tauSTDP{tau_STDP}_tauou{tau_ou}_tauwee{tau_wee}_tauwei{tau_wei}_seed{i}.csv', index=False)
@@ -83,11 +82,13 @@ for i in range(seeds):
         df_theory_lamb.to_csv(f'{loc}data/lamb_theory_Ne_{N_E}_T{T}_wee{w_EE*factor}_wei{w_EI*factor}_wii{w_II*factor}_wie{w_IE*factor}_sigma{sigma}_cx{c_x}_taur{tau_r}_tauSTDP{tau_STDP}_tauou{tau_ou}_tauwee{tau_wee}_tauwei{tau_wei}_seed{i}.csv', index=False)
 
         df_Wee_theory = pd.DataFrame(Wee_theory)
-        df_Wee_theory.to_csv(f'{loc}data/W_theory_Ne_{N_E}_T{T}_wee{w_EE*factor}_wei{w_EI*factor}_wii{w_II*factor}_wie{w_IE*factor}_sigma{sigma}_cx{c_x}_taur{tau_r}_tauSTDP{tau_STDP}_tauou{tau_ou}_tauwee{tau_wee}_tauwei{tau_wei}_seed{i}.csv', index=False)
+        #df_Wee_theory.to_csv(f'{loc}data/W_theory_Ne_{N_E}_T{T}_wee{w_EE*factor}_wei{w_EI*factor}_wii{w_II*factor}_wie{w_IE*factor}_sigma{sigma}_cx{c_x}_taur{tau_r}_tauSTDP{tau_STDP}_tauou{tau_ou}_tauwee{tau_wee}_tauwei{tau_wei}_seed{i}.csv', index=False)
+        df_Wee_theory.to_csv(f'{loc}data/W_theory_Ne_{N_E}_T{T}_wee{w_EE}_wei{w_EI}_wii{w_II}_wie{w_IE}_sigma{sigma}_cx{c_x}_taur{tau_r}_tauSTDP{tau_STDP}_tauou{tau_ou}_tauwee{float(tau_wee * tau_rprim)}_tauwei{tau_wei * tau_rprim}_seed{i}.csv', index=False)
 
         df_Wei_theory = pd.DataFrame(Wei_theory)
-        df_Wei_theory.to_csv(f'{loc}data/Wei_theory_Ne_{N_E}_T{T}_wee{w_EE*factor}_wei{w_EI*factor}_wii{w_II*factor}_wie{w_IE*factor}_sigma{sigma}_cx{c_x}_taur{tau_r}_tauSTDP{tau_STDP}_tauou{tau_ou}_tauwee{tau_wee}_tauwei{tau_wei}_seed{i}.csv', index=False)
-
+        df_Wee_theory.to_csv(f'{loc}data/W_theory_Ne_{N_E}_T{T}_wee{w_EE}_wei{w_EI}_wii{w_II}_wie{w_IE}_sigma{sigma}_cx{c_x}_taur{tau_r}_tauSTDP{tau_STDP}_tauou{tau_ou}_tauwee{float(tau_wee * tau_rprim)}_tauwei{tau_wei * tau_rprim}_seed{i}.csv', index=False)
+        #df_Wei_theory.to_csv(f'{loc}data/Wei_theory_Ne_{N_E}_T{T}_wee{w_EE*factor}_wei{w_EI*factor}_wii{w_II*factor}_wie{w_IE*factor}_sigma{sigma}_cx{c_x}_taur{tau_r}_tauSTDP{tau_STDP}_tauou{tau_ou}_tauwee{tau_wee}_tauwei{tau_wei}_seed{i}.csv', index=False)
+        df_Wei_theory.to_csv(f'{loc}data/Wei_theory_Ne_{N_E}_T{T}_wee{w_EE}_wei{w_EI}_wii{w_II}_wie{w_IE}_sigma{sigma}_cx{c_x}_taur{tau_r}_tauSTDP{tau_STDP}_tauou{tau_ou}_tauwee{float(tau_wee * tau_rprim)}_tauwei{tau_wei * tau_rprim}_seed{i}.csv', index=False)
         # Release the largest arrays before the next simulation.
         del balance_index
         del track_W_mean
@@ -96,3 +97,4 @@ for i in range(seeds):
         del df_Wei_theory
         del df_Wee_theory
         del track_W
+
