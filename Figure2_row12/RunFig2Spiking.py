@@ -6,10 +6,10 @@ from Fig2SpikingSim import spiking_sim
 
 
 # Sweep settings used by the supplied Figure 2 simulation runner.
-seeds = 10
+seeds = 1
 print('hellow')
 sigma = 0
-w_EEs = np.array([27, 28])
+w_EEs = np.array([26,25, 24, 23, 22, 21, 20, 19, 18, 17, 16, 15, 14])
 w_EIs = np.array([30])
 c_x = 0.
 
