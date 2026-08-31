@@ -317,7 +317,7 @@ ax_rastor.set_xlabel('Time (ms)', fontsize=ft, labelpad=-10)
 ax_rastor.set_ylabel('Neuron Idx', fontsize=ft, labelpad=-23)
 
 # Parameters that identify the long plasticity simulations.
-seeds = 15
+seeds = 1 #run more seeds in data if you want more
 skip = 1000
 T = 100.0
 N_E = 500
