@@ -61,7 +61,7 @@ time          = np.linspace(0, T, int(T / dt))
 loc           = 'Fig7'
 skip          = 2000
 time_reduced  = time[::skip]
-seeds         = 10
+seeds         = 1
 aE, aI, b     = 20, 20, 20.
 
 ############################################################################
