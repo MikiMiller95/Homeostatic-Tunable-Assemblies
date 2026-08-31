@@ -162,9 +162,10 @@ start_t, end_t = 25., 70.
 idx_s  = np.argmin(np.abs(time_reduced - start_t))
 idx_e  = np.argmin(np.abs(time_reduced - end_t))
 
-time_theory = np.linspace(0,T,int(T/dt))
-idx_st  = np.argmin(np.abs(time_theory - start_t))
-idx_et  = np.argmin(np.abs(time_theory - end_t))
+# The saved theory trajectories use the same skip=2000 grid as the simulation data.
+time_theory = time_reduced.copy()
+idx_st = np.argmin(np.abs(time_theory - start_t))
+idx_et = np.argmin(np.abs(time_theory - end_t))
 for i, sigma in enumerate(sigmas):
     color = cmap(norm(6-count-1))
     # Allocate arrays for all seeds at the current correlation strength
@@ -172,19 +173,25 @@ for i, sigma in enumerate(sigmas):
     seed_th_drift      = []
 
     mean_wee_seeds   = np.zeros((seeds, len(time_reduced)))
-    mean_theory_seeds = np.zeros((seeds, len(time_theory)-1))
+    mean_theory_seeds = np.zeros((seeds, len(time_theory)))
     mean_wei_seeds   = np.zeros_like(mean_wee_seeds)
     balance_idx = np.zeros((seeds, 2, len(time_reduced)))
     q_rel = np.zeros((seeds,2, len(time_reduced)))
 
 
     for s in range(seeds):
+        print('s',s)
         # Load simulation, theory, balance, and reciprocity outputs
         df_wee = pd.read_csv( f'{loc}data/mean_ee_weights_Ne_{N}_T{T}_wee{w_EE_0}_wei{w_EI_0}_' f'wii{w_II}_wie{w_IE}_sigma{sigma}_cx{c_x}_taur{tau_r}_tauSTDP{tau_STDP}_' f'tauou{tau_ou}_tauwee{tau_wee}_tauwei{tau_wei}_seed{s}.csv')
         mean_wee_seeds[s, :] = df_wee.to_numpy()[:-1, 0]
 
-        df_theory_wee = pd.read_csv( f'{loc}data/W_theory_Ne_{N}_T{T}_wee{w_EE_0}_wei{w_EI_0}_' f'wii{w_II}_wie{w_IE}_sigma{sigma}_cx{c_x}_taur{tau_r}_tauSTDP{tau_STDP}_' f'tauou{tau_ou}_tauwee{float(tau_wee)}_tauwei{tau_wei}_seed{s}.csv')
-        mean_theory_seeds[s, :] = df_theory_wee.to_numpy()[:-1, 0]
+        df_theory_wee = pd.read_csv( f'{loc}data/W_theory_Ne_{N}_T{T}_wee{w_EE_0}_wei{w_EI_0}_' f'wii{w_II}_wie{w_IE}_sigma{sigma}_cx{c_x}_taur{tau_r}_tauSTDP{tau_STDP}_' f'tauou{tau_ou}_tauwee{tau_wee}_tauwei{tau_wei}_seed{s}.csv')
+        #mean_theory_seeds[s, :] = df_theory_wee.to_numpy()[:-1, 0]
+        theory_wee = df_theory_wee.to_numpy()[:-1, 0]
+
+        if theory_wee.size != time_theory.size:raise ValueError(f"Theory file for sigma={sigma}, seed={s} contains "f"{theory_wee.size} usable samples, but Fig6.py expects "f"{time_theory.size}.")
+
+        mean_theory_seeds[s, :] = theory_wee
 
         df_wei = pd.read_csv( f'{loc}data/mean_ei_weights_Ne_{N}_T{T}_wee{w_EE_0}_wei{w_EI_0}_' f'wii{w_II}_wie{w_IE}_sigma{sigma}_cx{c_x}_' f'taur{tau_r}_tauSTDP{tau_STDP}_tauou{tau_ou}_' f'tauwee{tau_wee}_tauwei{tau_wei}_seed{s}.csv')
         mean_wei_seeds[s] = df_wei.to_numpy()[:-1, 0]
@@ -241,11 +248,15 @@ for i, sigma in enumerate(sigmas):
     if sigma in [0., .3,  .5]:
         ax[1, 2].plot(time_reduced, mean_wee,color=color, linestyle=':')
         ax[1, 2].fill_between(time_reduced, mean_wee - std_wee,mean_wee + std_wee, color=color, alpha=0.3)
-        ax[1,2].plot(time_theory[:-1], mean_theory_wee, color=color, linestyle='solid')
+        #ax[1,2].plot(time_theory[:-1], mean_theory_wee, color=color, linestyle='solid')
+        ax[1, 2].plot(time_theory,mean_theory_wee,color=color,linestyle='solid')
         if sigma==.5:
-            ax[1,2].plot(time_theory[:-1], mean_theory_wee, color=color, linestyle='solid',label='Theory')
+            #ax[1,2].plot(time_theory[:-1], mean_theory_wee, color=color, linestyle='solid',label='Theory')
+            ax[1, 2].plot(time_theory,mean_theory_wee,color=color,linestyle='solid',label='Theory')
             ax[1, 2].plot(time_reduced, mean_wee,color=color, linestyle=':',label=f'Sim')
-        ax[1, 2].fill_between(time_theory[:-1], mean_theory_wee - std_theory_wee,mean_theory_wee + std_theory_wee, color=color, alpha=0.3)
+
+        #ax[1, 2].fill_between(time_theory[:-1], mean_theory_wee - std_theory_wee,mean_theory_wee + std_theory_wee, color=color, alpha=0.3)
+        ax[1, 2].fill_between(time_theory,mean_theory_wee - std_theory_wee,mean_theory_wee + std_theory_wee,color=color,alpha=0.3)
 
     count += 1
     sim_drift.append(np.mean(seed_sim_drift))
