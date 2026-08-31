@@ -28,6 +28,10 @@ pip install numpy pandas matplotlib scikit-learn
 
 Run all commands from this directory so that the relative imports and data paths resolve correctly.
 
+
+## Make data directories
+mkdir -p Fig3data RateDynamicsdata VaryaE
+
 ## Generate the simulation data
 
 The current figure reads data from three directories. Run these scripts to regenerate those datasets:
