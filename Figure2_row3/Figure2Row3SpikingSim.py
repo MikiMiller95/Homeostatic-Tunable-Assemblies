@@ -4,7 +4,7 @@ import time as TimeTime
 
 import numpy as np
 
-from Figure2Row3HelperFunctions import generate_bernouilli_weight_array, generate_bernouilli_wx, generate_block_wx, generate_weight_array
+from helper_functions import generate_bernouilli_weight_array, generate_bernouilli_wx, generate_block_wx, generate_weight_array
 
 
 def spiking_sim(normalize, axs, seed, c_x, sigma, ctt, tau_r, tau_ou, tau_STDP, tau_wee, tau_wei, N_E, N_I, T, dt, w_EE, w_EI, w_IE, w_II, pulse_num=0, pattern_comp=False):
