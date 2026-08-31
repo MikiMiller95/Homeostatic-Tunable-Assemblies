@@ -54,7 +54,6 @@ python RunFig6Spiking.py
 python RunTheoryAgain.py
 ```
 
-`RunFig6Spiking.py` now covers all six sigma values but still runs only five seeds. `RunTheoryAgain.py` runs 23 seeds; `Fig6.py` uses the first 20 theory files.
 
 ### 2. Long weight and rate traces: `Driftdata/`
 
