@@ -13,14 +13,14 @@ import pandas as pd
 # Simulation sweep
 # =============================================================================
 
-seeds = 15
+seeds = 1 # make bigger if you want to get more seeds ; this is made low for ease of initial tests
 print('hellow')
 sigmas = [0.]
 c_x = 0.
 axs = None
 
 # Run seeds 1 through 14 for each requested external-noise amplitude.
-for i in range(1, seeds):
+for i in range(seeds):
     for sigma in sigmas:
         # Network size, duration, and numerical time step.
         ms_per_sec = 1000
