@@ -59,8 +59,11 @@ def spiking_sim(seed, c_x, sigma, ctt, tau_r, tau_ou, tau_STDP, tau_wee, tau_wei
     spike_trains_E = np.zeros((N_E, bins_store))
     spike_trains_I = np.zeros((N_I, bins_store))
     spike_trains_X = np.zeros((N_x, bins_store))
-    track_lam_E = np.zeros(shape=(track_num_n, int(len(time) // skip) + 1))
-    track_lam_I = np.zeros(shape=10)
+    track_lam_E[:track_num_n, t // skip] = Lam[:track_num_n]
+    track_lam_I[:track_num_n, t // skip] = Lam[N_E:N_E + track_num_n]
+    track_mean_rates[0, t // skip] = np.mean(Lam[:N_E])
+    track_mean_rates[1, t // skip] = np.mean(Lam[N_E:])
+
     track_rates = np.zeros(shape=(10, len(time)))
     track_mean_rates = np.zeros(shape=(2, int(len(time) // skip) + 1))
     aE = base_ex
@@ -127,9 +130,10 @@ def spiking_sim(seed, c_x, sigma, ctt, tau_r, tau_ou, tau_STDP, tau_wee, tau_wei
 
         # Store the current rates and selected network quantities.
         if t % skip == 0:
-            track_lam_E[:track_num_n, t // skip] = Lam[:track_num_n]
-            track_mean_rates[0, t // skip] = np.mean(Lam[:N_E])
-            track_mean_rates[1, t // skip] = np.mean(Lam[N_E:])
+            track_lam_E[:track_num_n, t//skip] = Lam[:track_num_n]
+            track_lam_I[:track_num_n, t//skip] = Lam[N_E:N_E+track_num_n]
+            track_mean_rates[0, t//skip] = np.mean(Lam[:N_E])
+            track_mean_rates[1, t//skip] = np.mean(Lam[N_E:])
         np.fill_diagonal(W, 0)
 
         # Decay the STDP and synaptic traces, then increment them at spike times.
@@ -154,36 +158,94 @@ def spiking_sim(seed, c_x, sigma, ctt, tau_r, tau_ou, tau_STDP, tau_wee, tau_wei
     track_W_mean = np.vstack([track_mean_W[0, :], track_mean_W[1, :]])
     return (time, track_W, track_W_mean, track_rates, track_mean_rates, time_reduced, track_lam_E, track_lam_I, spike_trains_E, spike_trains_I, spike_trains_X, b)
 
-# Configure and run the seed-0 simulation used for the raster panel.
-sigmas = [0.0]
+import gc
+
+cases = [
+    {
+        'name': 'current weak',
+        'N_E': 500,
+        'N_I': 500,
+        'T': 10.0,
+        'dt': 0.1 / 1000.0,
+        'tau_ou': 8.0 / 1000.0,
+        'tau_r': 8.0 / 1000.0,
+        'tau_STDP': 40.0 / 1000.0,
+        'tau_wei': 75000 / 3,
+        'tau_wee': 225000 / 3,
+        'w_EE_scale': 0.036,
+        'w_EI_scale': 0.036,
+        'w_IE_scale': 0.02,
+        'w_II_scale': 0.02,
+        'seed': 0
+    },
+    {
+        'name': 'old strong',
+        'N_E': 100,
+        'N_I': 100,
+        'T': 3.9,
+        'dt': 0.0002,
+        'tau_ou': 10.0 / 1000.0,
+        'tau_r': 15.0 / 1000.0,
+        'tau_STDP': 100.0 / 1000.0,
+        'tau_wei': 100.0,
+        'tau_wee': 300,
+        'w_EE_scale': 20.0,
+        'w_EI_scale': 40.0,
+        'w_IE_scale': 50.0,
+        'w_II_scale': 50.0,
+        'seed': 113
+    }
+]
+
+sigma = 0.0
 c_x = 0.0
-for sigma in sigmas:
-    ms_per_sec = 1000
-    N_E = 500
-    N_I = 500
-    T = 10.0
-    dt = 0.1 / ms_per_sec
-    tau_ou = 8.0 / ms_per_sec
-    tau_r = 8.0 / ms_per_sec
-    tau_STDP = 120.0 / ms_per_sec
-    tau_wei = 75000 
-    tau_wee = 225000 
+ctt = 0
+loc = 'Fig1Rastordata/'
+os.makedirs(loc, exist_ok=True)
+
+for case in cases:
+    N_E = case['N_E']
+    N_I = case['N_I']
+    T = case['T']
+    dt = case['dt']
+    tau_ou = case['tau_ou']
+    tau_r = case['tau_r']
+    tau_STDP = case['tau_STDP']
+    tau_wei = case['tau_wei']
+    tau_wee = case['tau_wee']
+    seed = case['seed']
+
     factor = np.sqrt(N_E)
-    w_IE = 0.02 / factor
-    w_II = 0.02 / factor
-    w_EE = 0.036 / factor
-    w_EI = 0.036 / factor
-    ctt = 0
-    loc = 'Fig1Rastordata/'
-    seed = 0
+    w_EE = case['w_EE_scale'] / factor
+    w_EI = case['w_EI_scale'] / factor
+    w_IE = case['w_IE_scale'] / factor
+    w_II = case['w_II_scale'] / factor
 
-    # Run the simulation and convert the three spike arrays to data frames.
+    print(f"Running {case['name']} case")
+
     time, track_W, track_W_mean, track_rates, track_mean_rates, time_reduced, track_lam_E, track_lam_I, spike_trains_E, spike_trains_I, spike_trains_X, cval = spiking_sim(seed, c_x, sigma, ctt, tau_r, tau_ou, tau_STDP, tau_wee, tau_wei, N_E, N_I, T, dt, w_EE, w_EI, w_IE, w_II)
-    df_spikes_E = pd.DataFrame(spike_trains_E)
-    df_spikes_I = pd.DataFrame(spike_trains_I)
-    df_spikes_X = pd.DataFrame(spike_trains_X)
 
-    # Save each population using the parameter-encoded filenames read by Fig1.py.
-    df_spikes_E.to_csv(f'{loc}spike_trains_E_Ne_{N_E}_T{T}_wee{w_EE * factor}_wei{w_EI * factor}_wii{w_II * factor}_wie{w_IE * factor}_sigma{sigma}_cx{c_x}_taur{tau_r}_tauSTDP{tau_STDP}_tauou{tau_ou}_tauwee{tau_wee}_tauwei{tau_wei}_seed{seed}.csv', index=False)
-    df_spikes_I.to_csv(f'{loc}spike_trains_I_Ne_{N_E}_T{T}_wee{w_EE * factor}_wei{w_EI * factor}_wii{w_II * factor}_wie{w_IE * factor}_sigma{sigma}_cx{c_x}_taur{tau_r}_tauSTDP{tau_STDP}_tauou{tau_ou}_tauwee{tau_wee}_tauwei{tau_wei}_seed{seed}.csv', index=False)
-    df_spikes_X.to_csv(f'{loc}spike_trains_X_Ne_{N_E}_T{T}_wee{w_EE * factor}_wei{w_EI * factor}_wii{w_II * factor}_wie{w_IE * factor}_sigma{sigma}_cx{c_x}_taur{tau_r}_tauSTDP{tau_STDP}_tauou{tau_ou}_tauwee{tau_wee}_tauwei{tau_wei}_seed{seed}.csv', index=False)
+    lam_suffix = f'Ne_{N_E}_T{T}_wee{w_EE}_wei{w_EI}_wii{w_II}_wie{w_IE}_sigma{sigma}_cx{c_x}_taur{tau_r}_tauSTDP{tau_STDP}_tauou{tau_ou}_tauwee{tau_wee}_tauwei{tau_wei}_seed{seed}'
+    spike_suffix = f'Ne_{N_E}_T{T}_wee{w_EE * factor}_wei{w_EI * factor}_wii{w_II * factor}_wie{w_IE * factor}_sigma{sigma}_cx{c_x}_taur{tau_r}_tauSTDP{tau_STDP}_tauou{tau_ou}_tauwee{tau_wee}_tauwei{tau_wei}_seed{seed}'
+
+    df_lamE = pd.DataFrame(track_lam_E)
+    df_lamE.to_csv(f'{loc}tracked_lamE_{lam_suffix}.csv', index=False)
+
+    df_lamI = pd.DataFrame(track_lam_I)
+    df_lamI.to_csv(f'{loc}tracked_lamI_{lam_suffix}.csv', index=False)
+
+    df_spikes_E = pd.DataFrame(spike_trains_E)
+    df_spikes_E.to_csv(f'{loc}spike_trains_E_{spike_suffix}.csv', index=False)
+
+    df_spikes_I = pd.DataFrame(spike_trains_I)
+    df_spikes_I.to_csv(f'{loc}spike_trains_I_{spike_suffix}.csv', index=False)
+
+    df_spikes_X = pd.DataFrame(spike_trains_X)
+    df_spikes_X.to_csv(f'{loc}spike_trains_X_{spike_suffix}.csv', index=False)
+
+    print(f"Finished {case['name']} case")
+
+    del time, track_W, track_W_mean, track_rates, track_mean_rates, time_reduced
+    del track_lam_E, track_lam_I, spike_trains_E, spike_trains_I, spike_trains_X
+    del df_lamE, df_lamI, df_spikes_E, df_spikes_I, df_spikes_X
+    gc.collect()
