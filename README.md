@@ -11,6 +11,8 @@ This repository contains the simulation, analysis, and figure-generation code fo
 
 The repository is organized by manuscript figure. Each figure folder contains its own README, the scripts used to generate the underlying data, and the script used to assemble the final figure.
 
+If you have any questions or difficulty in reproducing results, please email mcmiller1@uchicago.edu
+
 ```
 homeostatic-tunable-assemblies/
 ├── README.md
