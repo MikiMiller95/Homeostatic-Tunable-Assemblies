@@ -31,15 +31,6 @@ Fig7data/mean_ee_weights_..._seed<S>.csv
 Fig7data/mean_ei_weights_..._seed<S>.csv
 ```
 
-The uploaded `RunFig7Spiking` and `Fig7SpikingSim` files appear intended to create mean-weight trajectories, but they are mutually incompatible and use parameters and filenames that do not match the files loaded by `Fig7.py`. They are therefore **not included in this runnable repository** and are supplied separately in `excluded_review/` for review only. Their inconsistencies are listed below and in `excluded_review/README_EXCLUDED.md`.
-
-Until the matching long-spiking runner is recovered, either:
-
-1. place the already-generated `mean_ee_weights` and `mean_ei_weights` CSV files in `Fig7data/`; or
-2. supply the exact simulation runner/version that generated the Figure 7 files expected by `Fig7.py`.
-
-No attempt was made to infer or repair that missing workflow because doing so would change or guess at the simulation analysis.
-
 ## Usage
 
 ### 1. Install dependencies
@@ -72,7 +63,7 @@ The plotted raster marks the input-correlation switch at 6.8 s. The script delib
 python RunFig7Theory.py
 ```
 
-This calls `Fig7D.run_sim()` for all six correlation values and writes seed-tagged theory trajectories to `Fig7data/`. It generates seeds 0–18; `Fig7.py` currently loads seeds 0–9.
+This calls `Fig7D.run_sim()` for all six correlation values and writes seed-tagged theory trajectories to `Fig7data/`.
 
 The script writes both:
 
@@ -81,13 +72,7 @@ Fig7data/W_theory_..._seed<S>.csv
 Fig7data/Wei_theory_..._seed<S>.csv
 ```
 
-Only `W_theory` is loaded by the current Figure 7 plotting script. `Wei_theory` is retained because it is an output of the original theory runner.
-
-### 4. Supply the long-spiking mean-weight data
-
-Before plotting, confirm that the matching `mean_ee_weights` and `mean_ei_weights` files for seeds 0–9 are present in `Fig7data/`. There is no compatible supplied script to generate these exact files.
-
-### 5. Create the figure
+### 4. Create the figure
 
 ```bash
 python Fig7.py
