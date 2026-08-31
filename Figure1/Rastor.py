@@ -177,23 +177,6 @@ cases = [
         'w_II_scale': 0.02,
         'seed': 0
     },
-    {
-        'name': 'old strong',
-        'N_E': 100,
-        'N_I': 100,
-        'T': 3.9,
-        'dt': 0.0002,
-        'tau_ou': 10.0 / 1000.0,
-        'tau_r': 15.0 / 1000.0,
-        'tau_STDP': 100.0 / 1000.0,
-        'tau_wei': 100.0,
-        'tau_wee': 300,
-        'w_EE_scale': 20.0,
-        'w_EI_scale': 40.0,
-        'w_IE_scale': 50.0,
-        'w_II_scale': 50.0,
-        'seed': 113
-    }
 ]
 
 sigma = 0.0
