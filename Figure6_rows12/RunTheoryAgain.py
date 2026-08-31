@@ -11,7 +11,7 @@ import pandas as pd
 
 from Fig6D import run_sim
 
-seeds = 23
+seeds = 20
 print('hellow')
 
 sigmas = [.05, .15, .25, .35, .45, .55, .6]
