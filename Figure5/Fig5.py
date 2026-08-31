@@ -335,7 +335,7 @@ SIMLEN_IC = 10
 print('loading the data')
 # Load and overlay spiking responses for the same two conditions.
 for key in ('IC1', 'IC2'):
-    data_dir = Path('data')
+    data_dir = Path('Fig5data')
     w_EE0 = WEIGHTS_RAW[key]['w_EE']
     w_EX = 20.0 / factor * tau_rprim
     w_IX = 15.0 / factor * tau_rprim
@@ -384,7 +384,7 @@ tau_sim_std = []
 balance_list_std = []
 sim_energy_list_std = []
 tau_r = 8.0 / ms_per_sec
-data_dir = Path('data')
+data_dir = Path('Fig5data')
 SIMLEN_IC = 10
 tau_wee = 225000.0
 tau_wei = 75000.0
