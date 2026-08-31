@@ -58,15 +58,11 @@ for i in range(seeds):
         # Run the simulation. The pre-existing argument and return-value
         # inconsistencies with Fig7SpikingSim.py are documented in the README
         # and are intentionally not corrected here.
-        time, track_W,track_W_mean, track_mean_rates, time_reduced, track_lam_E,track_lam_I,spike_trains_E, spike_trains_I, Wee_theory,Wei_theory,theory_lamb,balance_index, cval, q_val= spiking_sim(normalize,axs,35*i,c_x,sigma,ctt,tau_rprim,tau_r, tau_ou,tau_STDP, tau_wee, tau_wei,N_E,N_I,T,dt,w_EE,w_EI,w_IE,w_II)
-
+        time, track_W, track_W_mean, track_mean_rates, time_reduced, track_lam_E, track_lam_I, spike_trains_E, spike_trains_I, Wee_theory, Wei_theory, theory_lamb, balance_index, cval = spiking_sim(normalize, axs, 35 * i, c_x, sigma, ctt, tau_rprim, tau_r, tau_ou, tau_STDP, tau_wee, tau_wei, N_E, N_I, T, dt, w_EE, w_EI, w_IE, w_II)
         # Save population rates and the auxiliary q-value output expected by
         # the original runner.
         track_mean_rates = pd.DataFrame(track_mean_rates)
         track_mean_rates.to_csv(f'{loc}data/mean_rates_Ne_{N_E}_T{T}_wee{w_EE*factor}_wei{w_EI*factor}_wii{w_II*factor}_wie{w_IE*factor}_sigma{sigma}_cx{c_x}_taur{tau_r}_tauSTDP{tau_STDP}_tauou{tau_ou}_tauwee{tau_wee}_tauwei{tau_wei}_seed{i}.csv', index=False)
-
-        track_qval = pd.DataFrame(q_val)
-        track_qval.to_csv(f'{loc}data/q_val_Ne_{N_E}_T{T}_wee{w_EE*factor}_wei{w_EI*factor}_wii{w_II*factor}_wie{w_IE*factor}_sigma{sigma}_cx{c_x}_taur{tau_r}_tauSTDP{tau_STDP}_tauou{tau_ou}_tauwee{tau_wee}_tauwei{tau_wei}_seed{i}.csv', index=False)
 
         # Save the mean E-to-E and I-to-E weight trajectories used by the
         # Figure 7 analysis.
