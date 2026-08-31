@@ -6,7 +6,7 @@ from Fig7D import run_sim
 
 
 # Correlation sweep and output seed labels.
-seeds=20
+seeds=1
 print('hellow')
 c_xs=[0., .2, .4 , .6, .8, 1.]
 sigma=.5
