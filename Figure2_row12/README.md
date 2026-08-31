@@ -13,8 +13,6 @@ The changes are limited to:
 - formatting individual function calls on one physical line where practical;
 - preserving the original variable names and notation rather than introducing renamed constants or a new program structure.
 
-See [`CLEANUP_NOTES.md`](CLEANUP_NOTES.md) for a file-by-file record of the cleanup and validation.
-
 ## Scientific role in Figure 2
 
 These scripts support the Figure 2 analysis of plastic E/I network trajectories initiated from different excitatory-weight conditions. The plotting script shows:
@@ -26,7 +24,6 @@ These scripts support the Figure 2 analysis of plastic E/I network trajectories 
 5. late-time mean inhibitory and excitatory firing rates as a function of normalized position along the fitted line;
 6. late-time excitatory-rate variance as a function of normalized position along the fitted line.
 
-The late-time firing-rate statistics are calculated over the retained 25–40 s window. The plotting script also writes the rescaled terminal weight coordinates to `final_wEE_list.txt` and `final_wEI_list.txt`.
 
 ## Repository contents
 
