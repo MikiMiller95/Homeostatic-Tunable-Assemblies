@@ -216,7 +216,7 @@ seed = 113
 dt = 0.0002
 num_points = int(T / dt)
 time_full = np.linspace(0, T, num_points, endpoint=False)
-loc = 'Fig1data_TauSTDP150ms/'
+loc = 'Fig1Rastordata/'
 t_start1 = start1 + 0.255
 t_end1 = end1 + 0.255
 t_start2 = start2 + 0.2
