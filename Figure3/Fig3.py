@@ -83,7 +83,7 @@ N = 500
 N_E = N
 N_I = N
 ms_per_sec = 1000
-tau_rprim = 2.0 / ms_per_sec
+tau_rprim = 2.0 / ms_per_sec #irrelevant scaling factor soe weights can be written as integers
 scale_factor = np.sqrt(N)
 w_II = 10.0 / scale_factor * tau_rprim
 w_IE = 10.0 / scale_factor * tau_rprim
@@ -258,7 +258,7 @@ w_EE_coords = np.array([18, 33]) / scale_factor * tau_rprim
 cs = ['tab:green', 'tab:orange']
 conditions = ['stable Sim', 'unstable Sim']
 
-seeds = 20
+seeds = 1
 T = 5.
 ms_per_sec = 1000
 sigma = 0.
@@ -322,8 +322,8 @@ ax4.legend(loc='upper right', frameon=False, fontsize=LEGEND_FS, bbox_to_anchor=
 
 # ──────────────────────────────────────────────────────────────────────
 #  Spiking simulation and theory: weights and rates over time
-# ──────────────────────────────────────────────────────────────────────
-seeds = 10
+# ─────────────────────────────────────────────────────────────────────
+seeds = 1
 T = 110.
 ms_per_sec = 1000
 sigma = 0.
