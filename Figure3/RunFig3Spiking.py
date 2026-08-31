@@ -42,7 +42,7 @@ for i in range(seeds):
         w_II = 10.0 / factor * tau_rprim
         w_EE = 16.0 / factor * tau_rprim
         w_EI = 25.0 / factor * tau_rprim
-        loc = 'Fig3data_taur8ms'
+        loc = 'Fig3data'
 
         # Run one seed and retain all original simulation outputs.
         time, track_W, track_W_mean, track_mean_rates, time_reduced, track_lam_E, track_lam_I, spike_trains_E, spike_trains_I, Wee_theory, Wei_theory, theory_lamb, balance_index, cval = spiking_sim(normalize, axs, 400 * i, c_x, sigma, tau_r, tau_ou, tau_STDP, tau_wee, tau_wei, N_E, N_I, T, dt, w_EE, w_EI, w_IE, w_II, dt_theory=dt_theory)
