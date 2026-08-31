@@ -59,10 +59,9 @@ def spiking_sim(seed, c_x, sigma, ctt, tau_r, tau_ou, tau_STDP, tau_wee, tau_wei
     spike_trains_E = np.zeros((N_E, bins_store))
     spike_trains_I = np.zeros((N_I, bins_store))
     spike_trains_X = np.zeros((N_x, bins_store))
-    track_lam_E[:track_num_n, t // skip] = Lam[:track_num_n]
-    track_lam_I[:track_num_n, t // skip] = Lam[N_E:N_E + track_num_n]
-    track_mean_rates[0, t // skip] = np.mean(Lam[:N_E])
-    track_mean_rates[1, t // skip] = np.mean(Lam[N_E:])
+    track_lam_E = np.zeros(shape=(track_num_n, int(len(time) // skip) + 1))
+    track_lam_I = np.zeros(shape=(track_num_n, int(len(time) // skip) + 1))
+
 
     track_rates = np.zeros(shape=(10, len(time)))
     track_mean_rates = np.zeros(shape=(2, int(len(time) // skip) + 1))
@@ -130,10 +129,10 @@ def spiking_sim(seed, c_x, sigma, ctt, tau_r, tau_ou, tau_STDP, tau_wee, tau_wei
 
         # Store the current rates and selected network quantities.
         if t % skip == 0:
-            track_lam_E[:track_num_n, t//skip] = Lam[:track_num_n]
-            track_lam_I[:track_num_n, t//skip] = Lam[N_E:N_E+track_num_n]
-            track_mean_rates[0, t//skip] = np.mean(Lam[:N_E])
-            track_mean_rates[1, t//skip] = np.mean(Lam[N_E:])
+            track_lam_E[:track_num_n, t // skip] = Lam[:track_num_n]
+            track_lam_I[:track_num_n, t // skip] = Lam[N_E:N_E + track_num_n]
+            track_mean_rates[0, t // skip] = np.mean(Lam[:N_E])
+            track_mean_rates[1, t // skip] = np.mean(Lam[N_E:])
         np.fill_diagonal(W, 0)
 
         # Decay the STDP and synaptic traces, then increment them at spike times.
