@@ -71,8 +71,6 @@ Generate these files with:
 python RunDrift6D.py
 ```
 
-`RunDrift6D.py` runs 20 seeds, while `Fig6.py` reads only the first 10. It also writes balance and theory files that are not read by the final figure script.
-
 ### 3. Correlated-input raster: `Driftdata/`
 
 The raster panel expects external, excitatory, and inhibitory spike trains for:
