@@ -346,7 +346,7 @@ mean_re_seeds = np.zeros((seeds - 1, len(time_reduced)))
 mean_ri_seeds = np.zeros((seeds - 1, len(time_reduced)))
 
 # Load each realization into the corresponding row of the aggregate arrays.
-for seed in range(1, seeds):
+for seed in range(seeds):
     df_wee_path = f'{loc}mean_ee_weights_Ne_{N_E}_T{T}_wee{wee_init * factor}_wei{wei_init * factor}_wii{wii * factor}_wie{wie * factor}_sigma{sigma}_cx{c_x}_taur{tau_r}_tauSTDP{tau_STDP}_tauou{tau_ou}_tauwee{tau_wee}_tauwei{tau_wei}_seed{seed}.csv'
     df_wei_path = f'{loc}mean_ei_weights_Ne_{N_E}_T{T}_wee{wee_init * factor}_wei{wei_init * factor}_wii{wii * factor}_wie{wie * factor}_sigma{sigma}_cx{c_x}_taur{tau_r}_tauSTDP{tau_STDP}_tauou{tau_ou}_tauwee{tau_wee}_tauwei{tau_wei}_seed{seed}.csv'
     df_rates_path = f'{loc}mean_rates_Ne_{N_E}_T{T}_wee{wee_init * factor}_wei{wei_init * factor}_wii{wii * factor}_wie{wie * factor}_sigma{sigma}_cx{c_x}_taur{tau_r}_tauSTDP{tau_STDP}_tauou{tau_ou}_tauwee{tau_wee}_tauwei{tau_wei}_seed{seed}.csv'
