@@ -525,7 +525,7 @@ for i, w_IE in enumerate(w_IE_vals):
 
     
     # Load a saved convergence grid, or recompute it when run_new is True.
-    DATA_DIR = "Fig5data/"
+    DATA_DIR = "Fig4data/"
     os.makedirs(DATA_DIR, exist_ok=True)
     fname = f'data_colorgrid_{np.around(w_IE / tau_rprim * np.sqrt(N),0)}'
     csv_path = os.path.join(DATA_DIR, f"{fname}.csv")        
@@ -705,7 +705,7 @@ for j in range(3):
 plt.subplots_adjust(hspace=.5, bottom=.09, top=.91, left=.05, wspace=.32, right=.97)
 
 # Save and display the completed figure.
-plt.savefig('Fig5.pdf', dpi=100)
+plt.savefig('Fig4.pdf', dpi=100)
 plt.show()
 
 
