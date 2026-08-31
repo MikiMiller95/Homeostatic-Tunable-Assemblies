@@ -167,6 +167,7 @@ for col_axes in [axes_left, axes_right]:
         ax.set_yticks([])
         ax.set_yticklabels([])
 
+
 # Compute and plot the schematic STDP curve.
 freqs = [20]
 colors = cm.viridis(np.linspace(0, 1, 5))
@@ -193,6 +194,9 @@ for spine in ['top', 'right']:
     ax_plastic.tick_params(labelsize=ft - 1)
     ax_plastic.spines[spine].set_visible(False)
 
+
+
+
 # Load the short, full-resolution intensity traces used in the paired-neuron panels.
 N_E = 100
 N_I = 100
@@ -204,7 +208,7 @@ wii = 50 / factor
 wie = 50 / factor
 c_x = 0.0
 tau_r = 15.0 / 1000.0
-tau_STDP = 120.0 / 1000.0
+tau_STDP = 100.0 / 1000.0
 tau_ou = 10.0 / 1000.0
 tau_wee = 300
 tau_wei = 100.0
@@ -212,7 +216,7 @@ seed = 113
 dt = 0.0002
 num_points = int(T / dt)
 time_full = np.linspace(0, T, num_points, endpoint=False)
-loc = 'Fig1data_TauSTDP120ms/'
+loc = 'Fig1data_TauSTDP150ms/'
 t_start1 = start1 + 0.255
 t_end1 = end1 + 0.255
 t_start2 = start2 + 0.2
@@ -247,6 +251,7 @@ for col_axes in [axes_left, axes_right]:
     shift = -0.05
     col_axes[4].set_position([pos_last.x0, pos_last.y0 - shift, pos_last.width, pos_last.height])
 
+
 # Add the raster, mean-weight, and mean-rate panels in the rightmost column.
 sub = gs[0:5, 4].subgridspec(nrows=3, ncols=1, height_ratios=[1.0, 1.0, 1.0], hspace=0.2)
 ax_rastor = fig.add_subplot(sub[0, 0])
@@ -267,11 +272,11 @@ wee0 = 0.036 / factor
 wei0 = 0.036 / factor
 seed = 0
 c_x = 0.0
-tau_STDP = 120.0 / ms
+tau_STDP = 40.0 / ms
 tau_ou = 8.0 / ms
 tau_r = 8.0 / ms
-tau_wee = 225000 
-tau_wei = 75000 
+tau_wee = 75000. 
+tau_wei = 25000. 
 
 # Load the external, excitatory, and inhibitory spike-time arrays.
 fileX = f'{loc}spike_trains_X_Ne_{N_E}_T{T_big}_wee{wee0 * factor}_wei{wei0 * factor}_wii{wii * factor}_wie{wie * factor}_sigma{sigma}_cx{c_x}_taur{tau_r}_tauSTDP{tau_STDP}_tauou{tau_ou}_tauwee{tau_wee}_tauwei{tau_wei}_seed{seed}.csv'
@@ -410,7 +415,7 @@ ax_plastic.set_position([pos_plastic.x0, pos_plastic.y0 + shift, pos_plastic.wid
 TITLE_FS = 12
 TICK_FS = 8
 mpl.rcParams.update({'xtick.labelsize': TICK_FS, 'ytick.labelsize': TICK_FS, 'axes.labelsize': TITLE_FS})
-plt.savefig('Fig1.pdf', dpi=150)
+#plt.savefig('Fig1.pdf', dpi=150)
 
 # Uncomment for interactive inspection.
-# plt.show()
+plt.show()
