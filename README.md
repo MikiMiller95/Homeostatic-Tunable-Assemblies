@@ -1,4 +1,6 @@
 [Repository_README.md](https://github.com/user-attachments/files/31619768/Repository_README.md)
+This is the primary repository for the paper **Homeostatic Plasticity Enables Stable, Flexible, and Tunable Assemblies** by Michelle C Miller, Christoph Miehl, and Brent Doiron
+
 # Homeostatic-Tunable-Assemblies
 Code and analysis for studying how excitatory Hebbian and inhibitory homeostatic plasticity generate tunable neural assemblies, synaptic continua, and stable firing rates in recurrent neural networks.
 # Homeostatic Plasticity and Tunable Neural Assemblies
