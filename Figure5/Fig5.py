@@ -329,7 +329,7 @@ ax2.set_ylim(0.0, 0.004)
 # Load spiking pulse responses for the two example locations
 # ──────────────────────────────────────────────────────────────────────────
 sigma = 0
-seeds_all = np.arange(15)
+seeds_all = np.arange(1)
 COLORS = dict(IC1='tab:orange', IC2=colors[idxcol])
 SIMLEN_IC = 10
 print('loading the data')
@@ -372,7 +372,7 @@ print('s_coord_full max', s_coord_full[-1])
 print('s_coord max', s_coord[-1])
 s_coord = (s_coord - np.min(s_coord_full)) / (np.max(s_coord_full) - np.min(s_coord_full))
 print('s_coord max', s_coord[-1])
-seeds_all = np.arange(20)
+seeds_all = np.arange(1)
 tau_sim = []
 sim_peak_list = []
 sim_var_list = []
@@ -649,7 +649,7 @@ ax_var.set_title('Var $r_E$ on Line')
 # Simulation autocovariance and response-trace insets
 # ──────────────────────────────────────────────────────────────────────────
 wEE_range = np.array([2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 24, 26, 28, 30, 32, 34])
-seeds_all = np.arange(50)
+seeds_all = np.arange(1)
 SIMLEN_IC = 10.0
 ACF_AMPS = []
 ACF_INSETS = []
