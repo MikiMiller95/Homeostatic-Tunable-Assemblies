@@ -340,21 +340,21 @@ tau_r = 8.0 / ms
 sigma = 0.0
 
 # Allocate arrays for the seed-by-seed mean weights and population rates.
-mean_wee_seeds = np.zeros((seeds - 1, len(time_reduced)))
-mean_wei_seeds = np.zeros((seeds - 1, len(time_reduced)))
-mean_re_seeds = np.zeros((seeds - 1, len(time_reduced)))
-mean_ri_seeds = np.zeros((seeds - 1, len(time_reduced)))
+mean_wee_seeds = np.zeros((seeds , len(time_reduced)))
+mean_wei_seeds = np.zeros((seeds , len(time_reduced)))
+mean_re_seeds = np.zeros((seeds, len(time_reduced)))
+mean_ri_seeds = np.zeros((seeds, len(time_reduced)))
 
 # Load each realization into the corresponding row of the aggregate arrays.
 for seed in range(seeds):
     df_wee_path = f'{loc}mean_ee_weights_Ne_{N_E}_T{T}_wee{wee_init * factor}_wei{wei_init * factor}_wii{wii * factor}_wie{wie * factor}_sigma{sigma}_cx{c_x}_taur{tau_r}_tauSTDP{tau_STDP}_tauou{tau_ou}_tauwee{tau_wee}_tauwei{tau_wei}_seed{seed}.csv'
     df_wei_path = f'{loc}mean_ei_weights_Ne_{N_E}_T{T}_wee{wee_init * factor}_wei{wei_init * factor}_wii{wii * factor}_wie{wie * factor}_sigma{sigma}_cx{c_x}_taur{tau_r}_tauSTDP{tau_STDP}_tauou{tau_ou}_tauwee{tau_wee}_tauwei{tau_wei}_seed{seed}.csv'
     df_rates_path = f'{loc}mean_rates_Ne_{N_E}_T{T}_wee{wee_init * factor}_wei{wei_init * factor}_wii{wii * factor}_wie{wie * factor}_sigma{sigma}_cx{c_x}_taur{tau_r}_tauSTDP{tau_STDP}_tauou{tau_ou}_tauwee{tau_wee}_tauwei{tau_wei}_seed{seed}.csv'
-    mean_wee_seeds[seed - 1, :] = pd.read_csv(df_wee_path).values[:-1, 0]
-    mean_wei_seeds[seed - 1, :] = pd.read_csv(df_wei_path).values[:-1, 0]
+    mean_wee_seeds[seed , :] = pd.read_csv(df_wee_path).values[:-1, 0]
+    mean_wei_seeds[seed , :] = pd.read_csv(df_wei_path).values[:-1, 0]
     rates_array = pd.read_csv(df_rates_path).values
-    mean_re_seeds[seed - 1, :] = rates_array[0, :-1]
-    mean_ri_seeds[seed - 1, :] = rates_array[1, :-1]
+    mean_re_seeds[seed , :] = rates_array[0, :-1]
+    mean_ri_seeds[seed , :] = rates_array[1, :-1]
 
 # Compute across-seed means and standard deviations.
 mean_wee = np.mean(mean_wee_seeds, axis=0)
