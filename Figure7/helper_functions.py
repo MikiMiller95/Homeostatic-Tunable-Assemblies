@@ -193,8 +193,6 @@ def generate_sep_poisson_neurons(base_ex,N_X, time_steps, dt, sigma_s, sigma_p, 
 # Dense recurrent-weight matrix used by the current simulations.
 def generate_weight_array(init_weights, num_E, num_I):
     variances = [.000000001,.000000001,.000000001,.000000001]
-    variances = [.00001,.00001,.00001,.00001]
-
 
     rep_weights = np.zeros(shape=((num_E+num_I), (num_E+num_I)))
     shapes = [(num_E, num_E),(num_E, num_I),(num_I, num_E),(num_I, num_I)]
