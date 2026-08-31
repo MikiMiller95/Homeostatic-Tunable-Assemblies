@@ -201,7 +201,6 @@ sigma = 0.0
 c_x = 0.0
 ctt = 0
 loc = 'Fig1Rastordata/'
-os.makedirs(loc, exist_ok=True)
 
 for case in cases:
     N_E = case['N_E']
