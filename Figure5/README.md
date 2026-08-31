@@ -62,8 +62,6 @@ one_pulse_balance_idx_...csv
 ```
 
 
-`Fig5.py` currently loads only the mean-rate and balance-index files. The weight files are retained because they were part of the original runner output.
-
 ### 2. Create the final figure
 
 ```bash
