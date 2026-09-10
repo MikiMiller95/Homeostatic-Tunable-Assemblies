@@ -60,27 +60,30 @@ def calculate_CSD(Sim_N, N, N_x, W, W_x, tau_STDP, tau_r, tau_ou, c, a, b, sigma
         exp_term_tau_rE2 = 1 / (1 - 1j * 2 * np.pi * tau_r * omega)
         exp_term_tau_rI1 = 1 / (1 + 1j * 2 * np.pi * tau_ri * omega)
         exp_term_tau_rI2 = 1 / (1 - 1j * 2 * np.pi * tau_ri * omega)
-        exp_term_tau_r_vec_1 = np.array([exp_term_tau_rE1, exp_term_tau_rI1])
-        exp_term_tau_r_vec_2 = np.array([exp_term_tau_rE2, exp_term_tau_rI2])
     else:
         exp_term_tau_rE1 = tau_r / (1 + 1j * 2 * np.pi * tau_r * omega)
         exp_term_tau_rE2 = tau_r / (1 - 1j * 2 * np.pi * tau_r * omega)
+        exp_term_tau_rI1 = tau_ri / (1 + 1j * 2 * np.pi * tau_ri * omega)
+        exp_term_tau_rI2 = tau_ri / (1 - 1j * 2 * np.pi * tau_ri * omega)
 
-    exp_term_tau_stdp = tau_STDP / (1 + 1j * 2 * np.pi * tau_STDP * omega)
+    exp_term_tau_r_vec_1 = np.array([exp_term_tau_rE1, exp_term_tau_rI1])
+    exp_term_tau_r_vec_2 = np.array([exp_term_tau_rE2, exp_term_tau_rI2])
+
+    exp_term_tau_stdp = tau_STDP / (1 + (2 * np.pi * tau_STDP * omega)**2)
     left_wx_term = W_x * exp_term_tau_rE1
     right_wx_term = W_xT * exp_term_tau_rE2
 
     # Propagate external and internally generated covariance through the network.
     lambda_cov = np.expand_dims(lambda_cov, axis=2)
     lambda_cov = np.repeat(lambda_cov, len(omega[0, 0, :]), axis=2)
-    right_Xcov = np.einsum('ijk,jlk->ilk', lambda_cov, left_wx_term)
-    X_cov = np.einsum('ijk,jlk->ilk', right_wx_term, right_Xcov)
+    right_Xcov = np.einsum('ijk,jlk->ilk', lambda_cov, right_wx_term)
+    X_cov = np.einsum('ijk,jlk->ilk', left_wx_term, right_Xcov)
 
     Full_W[:, 0, :] = W[:, 0, :] * exp_term_tau_r_vec_1[0, 0, 0, :]
     Full_W[:, 1, :] = W[:, 1, :] * exp_term_tau_r_vec_1[1, 0, 0, :]
     left_inverted = np.transpose(Id - Full_W, (2, 0, 1))
-    Full_WT[:, 0, :] = WT[:, 0, :] * exp_term_tau_r_vec_1[0, 0, 0, :]
-    Full_WT[:, 1, :] = WT[:, 1, :] * exp_term_tau_r_vec_1[1, 0, 0, :]
+    Full_WT[0, :, :] = WT[0, :, :] * exp_term_tau_r_vec_2[0, 0, 0, :]
+    Full_WT[1, :, :] = WT[1, :, :] * exp_term_tau_r_vec_2[1, 0, 0, :]
     right_inverted = np.transpose(Id - Full_WT, (2, 0, 1))
     inv_term_1 = np.linalg.inv(left_inverted)
     inv_term_2 = np.linalg.inv(right_inverted)
@@ -90,7 +93,7 @@ def calculate_CSD(Sim_N, N, N_x, W, W_x, tau_STDP, tau_r, tau_ou, c, a, b, sigma
     right_Ktilde = np.einsum('ijk,jlk->ilk', D / (Sim_N - 1) + X_cov, inv_term_2)
     Ktilde_SSdf = exp_term_tau_stdp * np.einsum('ijk,jlk->ilk', inv_term_1, right_Ktilde)
     Ktilde_SSdf = np.sum(Ktilde_SSdf, axis=2) * domega
-    return Ktilde_SSdf
+    return Ktilde_SSdf.real
 
 
 # -----------------------------------------------------------------------------
