@@ -6,6 +6,7 @@ import os
 import pandas as pd
 from sklearn.linear_model import LinearRegression
 import matplotlib.ticker as mticker
+from joblib import Parallel, delayed, parallel_config
 # ───────────────────────────────────────────────────────────────
 #  FONT SETTINGS (uniform, in one place)
 # ───────────────────────────────────────────────────────────────
@@ -100,7 +101,7 @@ def Q(wEE, wEI, w_IE):
 # ======================================================================
 # 3. NUMERICAL VECTOR-FIELD AND STABILITY HELPERS
 # Solve steady-state excitatory and inhibitory rates for one weight pair.
-def solve_rates(wEE, wEI):
+def solve_rates(wEE, wEI, w_IE):
     W = np.array([[wEE, -wEI],
                   [w_IE, -w_II]], dtype=float)
     M = np.eye(2) - N * W
@@ -114,7 +115,7 @@ def solve_rates(wEE, wEI):
 # Evaluate the homeostatic plasticity vector field in weight space.
 def VF_homeo(w):
     wEE, wEI = float(w[0]), float(w[1])
-    rE, rI = solve_rates(wEE, wEI)
+    rE, rI = solve_rates(wEE, wEI, w_IE)
     g = (rE - b)
     return np.array([(tau_STDP / tau_w_e) * rE * g,
                      (tau_STDP / tau_w_i) * rI * g], dtype=float)
@@ -234,7 +235,8 @@ def convergence_to_attractor(wEE0, wEI0, w_IE,
         return False
 
     # 2) actually on the rE≈b line (not just geometrically close)
-    rE, rI = solve_rates(wEEf, wEIf)
+    #rE, rI = solve_rates(wEEf, wEIf)
+    rE, rI = solve_rates(wEEf, wEIf, w_IE)
     if (not np.isfinite(rE)) or abs(rE - b) > tol_rE:
         return False
 
@@ -265,21 +267,25 @@ def run_sim(N, w_EE, w_IE, w_II, w_EI,
     W_rec[:, :, 0] = np.array([[w_EE, -w_EI],
                                [w_IE, -w_II]])
 
+    r_vec = np.zeros(2)  # Filtered recurrent activities; rates remain instantaneous.
+    rx = np.zeros(2)  # Filtered external activities, with tau_X = tau_re.
+    tau_r_vec = np.array([tau_re, tau_ri])
+
     for k in range(len(time) - 1):
         rE, rI = rates[:, k]
-        r_vec  = np.array([rE, rI])
         Wk     = W_rec[:, :, k]
 
-        tau_r_vec = np.array([tau_re, tau_ri])
-        drdt = (-r_vec / tau_r_vec + (N / tau_r_vec) * (Wk @ r_vec + Wx @ np.array([aE, aI])))
+        drdt = (rates[:, k] - r_vec) / tau_r_vec
 
         post_neurons = (rE - b)
         dwdt[0, 0, k] = (1 / tau_w_e) * (tau_STDP * rE * post_neurons)
         dwdt[0, 1, k] = -(1 / tau_w_i) * (tau_STDP * rI * post_neurons)
 
-        # Euler updates
+        # Euler updates of weights and traces, followed by rate reconstruction.
         W_rec[:, :, k + 1] = Wk + dwdt[:, :, k] * dt
-        rates[:, k + 1]    = r_vec + drdt * dt
+        r_vec = r_vec + drdt * dt
+        rx = rx + dt * (np.array([aE, aI]) - rx) / tau_re
+        rates[:, k + 1] = N * (W_rec[:, :, k + 1] @ r_vec + Wx @ rx)
 
     print('rates',rates[:,-5])
     print('W_rec',W_rec[:,:,-5])
@@ -309,21 +315,25 @@ def run_sim_short(N, w_EE, w_IE, w_II, w_EI,
     W_rec[:, :] = np.array([[w_EE, -w_EI],
                                [w_IE, -w_II]])
 
+    r_vec = np.zeros(2)  # Filtered recurrent activities; rates remain instantaneous.
+    rx = np.zeros(2)  # Filtered external activities, with tau_X = tau_re.
+    tau_r_vec = np.array([tau_re, tau_ri])
+
     for k in range(len(time) - 1):
         rE, rI = rates
-        r_vec  = np.array([rE, rI])
         Wk     = W_rec[:, :]
 
-        tau_r_vec = np.array([tau_re, tau_ri])
-        drdt = (-r_vec / tau_r_vec + (N / tau_r_vec) * (Wk @ r_vec + Wx @ np.array([aE, aI])))
+        drdt = (rates - r_vec) / tau_r_vec
 
         post_neurons = (rE - b)
         dwdt[0, 0] = (1 / tau_w_e) * (tau_STDP * rE * post_neurons)
         dwdt[0, 1] = -(1 / tau_w_i) * (tau_STDP * rI * post_neurons)
 
-        # Euler updates
+        # Euler updates of weights and traces, followed by rate reconstruction.
         W_rec[:, :] = Wk + dwdt[:, :] * dt
-        rates[:]    = r_vec + drdt * dt
+        r_vec = r_vec + drdt * dt
+        rx = rx + dt * (np.array([aE, aI]) - rx) / tau_re
+        rates[:] = N * (W_rec @ r_vec + Wx @ rx)
         if np.any(np.abs(W_rec[:, :]) > 2) or np.any(rates[:] ) > 100:
             print('time',time[k],'return weights',np.abs(W_rec[:, :]),'return rates,',rates[:] )
             return time, np.abs(W_rec) 
@@ -412,10 +422,6 @@ def placeholder_full_subplot(ax, aE, w_IE, label, w_IE_vals ):
 
     ax.fill_between(wEE_range[idx], nonosc[idx], wEIval_rEzero, color='m', alpha=.25)
 
-    # 7) Trajectory overlay
-    ax.plot(wEE_traj, wEI_traj, lw=lt, color='k', label='Simulation')
-    ax.scatter(wEE_traj[0], wEI_traj[0], s=50, marker='*', color='k', zorder=15, label='Start')
-
     # Separatrix (± branches)
     rad = (aI**2 * N**2 * tau_w_e * tau_w_i * w_IX**2
            * (aE * N * w_EX * w_IE + aI * (1 - N * wEE_range) * w_IX)**2)
@@ -499,15 +505,12 @@ fig, axs = plt.subplots(2, 3, figsize=(7.5, 4.5))
 
 # Bottom row: vary w_IE
 w_IE_vals   = np.array([22, 10, 2.]) / scale_factor * tau_rprim
-#w_IE_vals   = np.array([22]) / scale_factor * tau_rprim
-#w_IE_vals   = np.array([20]) / scale_factor * tau_rprim
-#w_IE_vals   = np.array([7.]) / scale_factor * tau_rprim
 titles1     = ['Regime 1 : Full Basin ',
                'Regime 2: Partial Basin\n' + r'$b < b_{max}$',
                'Regime 2: No Basin:\n' + r'$b > b_{max}$']
 lamb_labels = [r'$\lambda_{R1}$', r'$\lambda_{R2}: b<b_{max}$', r"$\lambda_{R2}:b>b_{max}$"]
 colors_seq  = ['firebrick', 'mediumvioletred', 'rebeccapurple']
-run_new=False
+run_new=False  # Regenerate the old convergence grids once, then set back to False.
 
 # Build one bottom-row regime panel per w_IE value.
 for i, w_IE in enumerate(w_IE_vals):
@@ -525,20 +528,15 @@ for i, w_IE in enumerate(w_IE_vals):
 
     
     # Load a saved convergence grid, or recompute it when run_new is True.
-    DATA_DIR = "Fig4data/"
+    DATA_DIR = "Fig5data/"
     os.makedirs(DATA_DIR, exist_ok=True)
     fname = f'data_colorgrid_{np.around(w_IE / tau_rprim * np.sqrt(N),0)}'
     csv_path = os.path.join(DATA_DIR, f"{fname}.csv")        
+
     if run_new:
-        # Allocate color grid: 0 for red, 1 for blue
-        color_grid = np.zeros_like(grid_x)
-        for m in range(grid_x.shape[0]):
-            for n in range(grid_x.shape[1]):
-                wEE_init = grid_x[m, n]
-                wEI_init = grid_y[m, n]
-                #did_converge = convergence_to_attractor(wEE_init, wEI_init, w_IE)
-                did_converge= 1.0 if convergence_to_attractor(wEE_init, wEI_init, w_IE) else 0.0
-                color_grid[m, n] = 1 if did_converge else 0
+        with parallel_config(backend="loky", n_jobs=-2, inner_max_num_threads=1):
+            color_grid = Parallel(verbose=10)(delayed(convergence_to_attractor)(grid_x[m, n], grid_y[m, n], w_IE) for m in range(grid_x.shape[0]) for n in range(grid_x.shape[1]))
+        color_grid = np.asarray(color_grid, dtype=float).reshape(grid_x.shape)
         
         # ---- save (use grids as labels so they reload cleanly) ----------
         pd.DataFrame(color_grid, index=wEI_grid, columns=wEE_grid).to_csv(
@@ -705,33 +703,8 @@ for j in range(3):
 plt.subplots_adjust(hspace=.5, bottom=.09, top=.91, left=.05, wspace=.32, right=.97)
 
 # Save and display the completed figure.
-plt.savefig('Fig4.pdf', dpi=100)
-plt.show()
+plt.savefig('Fig5.pdf', dpi=100)
+#plt.show()
 
 
-# NUMERICALLY GET THE SEPARATRIX
-"""
-if i == 0:
-    w0 = np.array([float(wEEval_rIzero), float(wEIval_rEzero)], dtype=float)
-    J = jacobian_F(w0)
-
-    # directions (dense fan)
-    N_DIRS = 16
-    angles = np.linspace(0.0, 2.0 * np.pi, N_DIRS, endpoint=False)
-    dirs = [np.array([np.cos(th), np.sin(th)], dtype=float) for th in angles]
-
-    EPS_SEED = 1e-5
-    STEP_LEN = 1e-4
-    N_STEPS  = 20000
-
-    _labeled_sep = False
-    for v in dirs:
-        seed = w0 + EPS_SEED * v
-        for time_dir in (+1, -1):
-            br = rk4_streamline_unbounded(seed, step_len=STEP_LEN, n_steps=N_STEPS, direction=time_dir)
-            if br.size:
-                axs[1, i].plot(br[:, 0], br[:, 1], color='r', lw=1.25, alpha=0.95,
-                               linestyle=':', label=("numerical separatrix" if not _labeled_sep else None))
-                _labeled_sep = True
-"""
 
