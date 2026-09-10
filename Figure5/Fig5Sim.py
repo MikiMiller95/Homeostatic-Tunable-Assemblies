@@ -45,31 +45,26 @@ def run_sim(N, w_EE, w_IE, w_II, w_EI, tau_ou, tau_STDP, tau_rprim, tau_r, tau_w
         for pt in pulse_times:
             i0 = int(np.round(pt / dt))
             burst_mask[i0:i0 + width_steps] = True
-    # Integrate the original rate equations with an Euler update.
+    # Evolve presynaptic traces; rates remain instantaneous firing rates.
+    r_vec = np.zeros(2)
+    rx = np.zeros(2)
+    tau_r_vec = np.array([tau_r, tau_r * 2.0])
     for i in range(len(time) - 1):
         if i % 100000 == 0:
             print(time[i])
-        # Rectify both population rates before computing the next step.
-        if rates[1, i] <= 0:
-            rates[1, i] = 0
-        if rates[0, i] <= 0:
-            rates[0, i] = 0
         W = rec_weights[:, :, i]
-        # Apply the selected perturbation protocol.
+        # Apply each pulse to the E source trace before reconstructing rates.
         if pulse_num == 1:
             if abs(time[i] - pert_time) < 10 * dt:
-                rates[0, i] += N * W[0, 0] * pulse_amp
-                rates[1, i] += N * W[1, 0] * pulse_amp
+                r_vec[0] += pulse_amp
                 pulse_trace[i] = pulse_amp
         elif burst_mask[i]:
-            rates[0, i] += N * W[0, 0] * pulse_amp
-            rates[1, i] += N * W[1, 0] * pulse_amp
+            r_vec[0] += pulse_amp
             pulse_trace[i] = pulse_amp
-        # Compute the rate update; the original active code keeps weights fixed.
-        rE, rI = rates[:, i]
-        r_vec = np.array([rE, rI])
-        tau_r_vec = np.array([tau_r, tau_r * 2.0])
-        drdt = -r_vec / tau_r_vec + N / tau_r_vec * (W @ r_vec + Wx_sim @ np.array([aE, aI]))
+        rates[:, i] = np.maximum(N * (W @ r_vec + Wx_sim @ rx), 0.0)
+        drdt = (rates[:, i] - r_vec) / tau_r_vec
+        r_vec = r_vec + drdt * dt
+        rx = rx + dt * (np.array([aE, aI]) * (time[i] > 0.0) - rx) / tau_r
         rec_weights[:, :, i + 1] = rec_weights[:, :, i] + dwdt[:, :, i] * dt
-        rates[:, i + 1] = rates[:, i] + drdt * dt
+        rates[:, i + 1] = np.maximum(N * (rec_weights[:, :, i + 1] @ r_vec + Wx_sim @ rx), 0.0)
     return (rates, time, np.abs(rec_weights), pulse_trace, pulse_amp)
