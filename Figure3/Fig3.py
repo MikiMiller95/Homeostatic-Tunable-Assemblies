@@ -83,7 +83,7 @@ N = 500
 N_E = N
 N_I = N
 ms_per_sec = 1000
-tau_rprim = 2.0 / ms_per_sec #irrelevant scaling factor soe weights can be written as integers
+tau_rprim = 2.0 / ms_per_sec
 scale_factor = np.sqrt(N)
 w_II = 10.0 / scale_factor * tau_rprim
 w_IE = 10.0 / scale_factor * tau_rprim
@@ -258,7 +258,7 @@ w_EE_coords = np.array([18, 33]) / scale_factor * tau_rprim
 cs = ['tab:green', 'tab:orange']
 conditions = ['stable Sim', 'unstable Sim']
 
-seeds = 1
+seeds = 20
 T = 5.
 ms_per_sec = 1000
 sigma = 0.
@@ -322,8 +322,8 @@ ax4.legend(loc='upper right', frameon=False, fontsize=LEGEND_FS, bbox_to_anchor=
 
 # ──────────────────────────────────────────────────────────────────────
 #  Spiking simulation and theory: weights and rates over time
-# ─────────────────────────────────────────────────────────────────────
-seeds = 1
+# ──────────────────────────────────────────────────────────────────────
+seeds = 10
 T = 110.
 ms_per_sec = 1000
 sigma = 0.
@@ -360,15 +360,14 @@ for seed in range(seeds):
     mean_re_seeds[seed, :] = track_mean_rates[0, :-1]
     mean_ri_seeds[seed, :] = track_mean_rates[1, :-1]
 
-    df_Wee_theory = pd.read_csv(f'{loc}/W_theory_Ne_{N_E}_T{T}_wee{wee}_wei{wei}_wii{wii}_wie{wie}_sigma{sigma}_cx{c_x}_taur{tau_r}_tauSTDP{tau_STDP}_tauou{tau_ou}_tauwee{tau_wee}_tauwei{tau_wei}_seed{seed}.csv').to_numpy()
-
 mean_wee = np.mean(mean_wee_seeds, axis=0)
 std_wee = np.std(mean_wee_seeds, axis=0)
 mean_wei = np.mean(np.abs(mean_wei_seeds), axis=0)
 std_wei = np.std(np.abs(mean_wei_seeds), axis=0)
 
 zord = 20
-ax1.plot(mean_wee[:-1], mean_wei[:-1] / mean_wei[0], linewidth=lt, color='tab:red', linestyle='solid', zorder=zord)
+ax1.plot(mean_wee[:-1], mean_wei[:-1], linewidth=lt, color='tab:red', linestyle='solid', zorder=zord)
+#ax1.plot(mean_wee[:-1], mean_wei[:-1] / mean_wei[0], linewidth=lt, color='tab:red', linestyle='solid', zorder=zord)
 ax2_top.fill_between(time_reduced, (mean_wee - std_wee) / mean_wee[0], (mean_wee + std_wee) / mean_wee[0], alpha=.3, color='tab:red', zorder=zord)
 linewei, = ax2_top.plot(time_reduced, mean_wei / mean_wei[0], label=wei_label, color='b')
 ax2_top.fill_between(time_reduced, (mean_wei - std_wei) / mean_wei[0], (mean_wei + std_wei) / mean_wei[0], alpha=.3, color='b', zorder=zord)
@@ -599,4 +598,6 @@ mpl.rcParams.update({
 
 plt.savefig('Fig3.pdf', dpi=200)
 plt.show()
+
+
 
