@@ -115,6 +115,8 @@ def spiking_sim(normalize, axs, seed, c_x, sigma, tau_r, tau_ou, tau_STDP, tau_w
     track_mean_rates = np.zeros(shape=(2, int(len(time) // skip) + 1))
 
     tr = np.array([0, 0])
+    r_vec = np.zeros(2)  # Filtered theory activity; do not reuse the spiking traces.
+    rx = np.zeros(2)  # Filtered external activity for the theory.
     tw = np.array([w_EE, -w_EI])
     if bernouilli:
         tw = tw / 0.1
@@ -279,7 +281,7 @@ def spiking_sim(normalize, axs, seed, c_x, sigma, tau_r, tau_ou, tau_STDP, tau_w
 
         # Integrate the population theory using the same update equations.
         if store_theory_lamb and plot_theory:
-            rx = np.array([aE, aI])
+            #rx = np.array([aE, aI])
             tau_r_vec = np.array([tau_r, tau_r_I])
             NW_theory[0, 0] = (N_E - 1) * tw[0]
             NW_theory[0, 1] = N_I * tw[1]
@@ -291,34 +293,40 @@ def spiking_sim(normalize, axs, seed, c_x, sigma, tau_r, tau_ou, tau_STDP, tau_w
                     skip_cov = 1000
 
                 if t % skip_cov == 0:
+
                     if bernouilli:
-                        cov_term = calculate_CSD(N_E, 2, 2, p * NW_theory, p * Wx_theory, tau_STDP, tau_r, tau_ou, c_x, aE, aI, sigma_p, sigma_s, tr[0], tr[1])
+                        cov_term = calculate_CSD(N_E, 2, 2, p * NW_theory, p * Wx_theory, tau_STDP, tau_r, tau_ou, c_x, aE, aI, sigma_p, sigma_s, tr[0], tr[1], normalize=normalize)
                     else:
-                        cov_term = calculate_CSD(N_E, 2, 2, NW_theory, Wx_theory, tau_STDP, tau_r, tau_ou, c_x, aE, aI, sigma_p, sigma_s, tr[0], tr[1])
+                        cov_term = calculate_CSD(N_E, 2, 2, NW_theory, Wx_theory, tau_STDP, tau_r, tau_ou, c_x, aE, aI, sigma_p, sigma_s, tr[0], tr[1], normalize=normalize)
+
+                        # Record at the same time as the spiking intensities, before advancing.
+            if t % skip == 0:
+                theory_weights[:, t // skip] = tw
+                theory_rates[:, t // skip] = tr
 
             for _ in range(theory_substeps):
                 track_theory_E_lamb = tr[0]
                 track_theory_I_lamb = tr[1]
-                r_vec = np.array([tr[0], tr[1]])
-
                 W_theory_matr[0, :] = tw
-                NW_theory[0, 0] = (N_E - 1) * tw[0]
-                NW_theory[0, 1] = N_I * tw[1]
 
                 if normalize:
-                    if bernouilli:
-                        drdt = (-r_vec + p * (NW_theory @ r_vec + Num_neur // 2 * Wx_theory @ rx)) / tau_r_vec
-                    else:
-                        drdt = (-r_vec + NW_theory @ r_vec + Num_neur // 2 * Wx_theory @ rx) / tau_r_vec
+                    drdt = (tr - r_vec) / tau_r_vec
+                    rx = rx + dt_theory * (np.array([aE, aI]) * (time[t] > 0.0) - rx) / tau_r
                 else:
-                    drdt = -r_vec / tau_r_vec + NW_theory @ r_vec + Num_neur // 2 * Wx_theory @ rx
+                    drdt = -r_vec / tau_r_vec + tr
+                    rx = rx + dt_theory * (np.array([aE, aI]) * (time[t] > 0.0) - rx / tau_r)
 
                 if plastic and time[t] > start_plastic:
                     dwdt[0, 0] = (tau_STDP * track_theory_E_lamb * (track_theory_E_lamb - b) + cov_term[0, 0]) / tau_wee
                     dwdt[0, 1] = -(tau_STDP * track_theory_I_lamb * (track_theory_E_lamb - b) + cov_term[0, 1]) / tau_wei
 
                 tw = tw + dwdt[0, :] * dt_theory
-                tr = tr + drdt * dt_theory
+                r_vec = r_vec + drdt * dt_theory
+                NW_theory[0, 0] = (N_E - 1) * tw[0]
+                NW_theory[0, 1] = N_I * tw[1]
+                tr = NW_theory @ r_vec + Num_neur // 2 * Wx_theory @ rx
+                if bernouilli:
+                    tr = p * tr
 
             if t % 10000 == 0:
                 print('theory_weights[1,t]', tw[1], 'theory_weights[0,t]', tw[0])
@@ -326,9 +334,7 @@ def spiking_sim(normalize, axs, seed, c_x, sigma, tau_r, tau_ou, tau_STDP, tau_w
                 print('##############################################################')
                 print('##############################################################')
                 print('theory_rates[:, t]', tr[0], tr[1], 'track_theory_E_lamb', track_theory_E_lamb, 'track_theory_I_lamb', track_theory_I_lamb)
-            if t % skip == 0:
-                theory_weights[:, t // skip] = tw
-                theory_rates[:, t // skip] = tr
+
 
         # Store population-average recurrent weights.
         if store_mean_weights and t % skip == 0:
