@@ -1,7 +1,6 @@
 """Helper functions for the Figure 7 simulation and theory scripts.
 
 Covariance uses presynaptic filters and the symmetric STDP kernel.
-Function signatures, connectivity, random draws, and diagnostic plots are unchanged.
 """
 
 import numpy as np
