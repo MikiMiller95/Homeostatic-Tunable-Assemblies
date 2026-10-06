@@ -1,7 +1,7 @@
 """Helper functions for the Figure 7 simulation and theory scripts.
 
-Function names, arguments, equations, random draws, returned values, and the
-optional diagnostic plots are unchanged from the uploaded helper file.
+Covariance uses presynaptic filters and the symmetric STDP kernel.
+Function signatures, connectivity, random draws, and diagnostic plots are unchanged.
 """
 
 import numpy as np
@@ -65,19 +65,23 @@ def calculate_CSD(Sim_N,N,N_x,W, W_x,tau_STDP, tau_r,tau_ou,c,a,b,sigma_p,sigma_
         exp_term_tau_rI1 = 1 /(1+1j*2*np.pi*tau_ri*omega)
         exp_term_tau_rI2 = 1/(1-1j*2*np.pi*tau_ri*omega)
 
-        exp_term_tau_r_vec_1 = np.array([exp_term_tau_rE1,exp_term_tau_rI1])
-        exp_term_tau_r_vec_2 = np.array([exp_term_tau_rE2,exp_term_tau_rI2])
     else:
         exp_term_tau_rE1 = tau_r /(1+1j*2*np.pi*tau_r*omega)
         exp_term_tau_rE2 = tau_r /(1-1j*2*np.pi*tau_r*omega)
+        exp_term_tau_rI1 = tau_ri /(1+1j*2*np.pi*tau_ri*omega)
+        exp_term_tau_rI2 = tau_ri /(1-1j*2*np.pi*tau_ri*omega)
 
-    exp_term_tau_stdp = tau_STDP /(1+1j*2*np.pi*tau_STDP*omega)
+    exp_term_tau_r_vec_1 = np.array([exp_term_tau_rE1,exp_term_tau_rI1])
+    exp_term_tau_r_vec_2 = np.array([exp_term_tau_rE2,exp_term_tau_rI2])
+
+    # The symmetric pair rule uses the real, even STDP kernel.
+    exp_term_tau_stdp = tau_STDP/(1+(2*np.pi*tau_STDP*omega)**2)
 
     left_wx_term = W_x*exp_term_tau_rE1
     right_wx_term = (W_xT)*exp_term_tau_rE2
 
-    right_Xcov = np.einsum('ijk,jlk->ilk', lambda_cov, left_wx_term)
-    X_cov = np.einsum('ijk,jlk->ilk', right_wx_term, right_Xcov)
+    right_Xcov = np.einsum('ijk,jlk->ilk', lambda_cov, right_wx_term)
+    X_cov = np.einsum('ijk,jlk->ilk', left_wx_term, right_Xcov)
 
     Full_W[:,0,:] =  W[:,0,:]*exp_term_tau_r_vec_1[0,0,0,:]
     Full_W[:,1,:] =  W[:,1,:]*exp_term_tau_r_vec_1[1,0,0,:]
@@ -91,8 +95,8 @@ def calculate_CSD(Sim_N,N,N_x,W, W_x,tau_STDP, tau_r,tau_ou,c,a,b,sigma_p,sigma_
     inv_term_1 = np.transpose(inv_term_1, (1,2,0))
     inv_term_2 = np.transpose(inv_term_2, (1,2,0))
 
-    right_Ktilde = np.einsum('ijk,jlk->ilk', D/(Sim_N-1)+X_cov, inv_term_2)
-    Ktilde_SSdf =exp_term_tau_stdp*np.einsum('ijk,jlk->ilk', inv_term_1, right_Ktilde) #(inv_term_1 @ (X_cov) @ inv_term_2) 
+    right_Ktilde = np.einsum('ijk,jlk->ilk', D/Sim_N+X_cov, inv_term_2)
+    Ktilde_SSdf = exp_term_tau_stdp*np.einsum('ijk,jlk->ilk', inv_term_1, right_Ktilde).real
     Ktilde_SSdf = np.sum(Ktilde_SSdf,axis=2)*domega
 
     del Full_WT
@@ -193,6 +197,8 @@ def generate_sep_poisson_neurons(base_ex,N_X, time_steps, dt, sigma_s, sigma_p, 
 # Dense recurrent-weight matrix used by the current simulations.
 def generate_weight_array(init_weights, num_E, num_I):
     variances = [.000000001,.000000001,.000000001,.000000001]
+    variances = [.00001,.00001,.00001,.00001]
+
 
     rep_weights = np.zeros(shape=((num_E+num_I), (num_E+num_I)))
     shapes = [(num_E, num_E),(num_E, num_I),(num_I, num_E),(num_I, num_I)]
@@ -266,5 +272,9 @@ def calculate_firing_rate(N,spike_times, window_size, time_step,curr_t):
         firing_rate[i] = spike_count / (window_size*time_step) 
 
     return firing_rate
+
+
+
+
 
 
