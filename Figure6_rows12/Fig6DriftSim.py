@@ -1,7 +1,7 @@
 """Long-timescale spiking simulation used for the Figure 6 drift traces.
 
-The simulation equations, update order, random seeds, stored quantities, and
-optional diagnostic plots are unchanged.
+Stochastic updates, random seeds, stored quantities, and diagnostic plots are unchanged.
+The optional companion mean-field theory uses presynaptic filters.
 """
 
 import time as TimeTime
@@ -141,6 +141,9 @@ def spiking_sim(normalize, axs,seed,c_x,sigma,ctt, tau_r, tau_ou,tau_STDP, tau_w
         theory_weights = np.zeros((2, int(len(time)//skip)+1))
         theory_weights[:,0] = np.array([w_EE,-w_EI])
         dwdt = np.zeros((2,2))
+        # r_vec and rx are presynaptic traces; tr contains the population rates.
+        r_vec = np.zeros(2)
+        rx = np.zeros(2)
         cov_term = np.zeros((2,2))
     balance_index=None
 
@@ -317,8 +320,6 @@ def spiking_sim(normalize, axs,seed,c_x,sigma,ctt, tau_r, tau_ou,tau_STDP, tau_w
         if store_theory_lamb and plot_theory:
             track_theory_E_lamb = tr[0]
             track_theory_I_lamb = tr[1]
-            r_vec = np.array([tr[0], tr[1]])
-            rx = np.array([aE,aI])
             W_theory_matr[0,:]=tw
 
             NW_theory[0,0] = (N_E-1)*tw[0]
@@ -326,12 +327,9 @@ def spiking_sim(normalize, axs,seed,c_x,sigma,ctt, tau_r, tau_ou,tau_STDP, tau_w
 
 
             if normalize:
-                if bernouilli:
-                    drdt = ( -r_vec / tau_r + p*(1./tau_r)*(NW_theory @ r_vec + Num_neur//2*Wx_theory @ rx))
-                else:
-                    drdt = ( -r_vec / tau_r + (1./tau_r)*(NW_theory @ r_vec + Num_neur//2*Wx_theory @ rx))
+                drdt = (tr - r_vec) / np.array([tau_r,tau_r_I])
             else:
-                drdt = ( -r_vec / tau_r + (NW_theory @ r_vec + Num_neur//2*Wx_theory @ rx))
+                drdt = tr - r_vec / np.array([tau_r,tau_r_I])
 
             if plastic and time[t]>start_plastic:
                 if time[t]>start_plastic + 2:
@@ -341,9 +339,9 @@ def spiking_sim(normalize, axs,seed,c_x,sigma,ctt, tau_r, tau_ou,tau_STDP, tau_w
                 if t%skip_cov==0:
 
                     if bernouilli:
-                        cov_term = calculate_CSD(Num_neur,2,2,p*NW_theory, p*Wx_theory,tau_STDP,tau_r,tau_ou,c_x,aE,aI,sigma_p,sigma_s,tr[0],tr[1])
+                        cov_term = calculate_CSD(Num_neur//2,2,2,p*NW_theory, p*Wx_theory,tau_STDP,tau_r,tau_ou,c_x,aE,aI,sigma_p,sigma_s,tr[0],tr[1],normalize=normalize)
                     else:
-                        cov_term = calculate_CSD(Num_neur,2,2,NW_theory, Wx_theory,tau_STDP,tau_r,tau_ou,c_x,aE,aI,sigma_p,sigma_s,tr[0],tr[1])
+                        cov_term = calculate_CSD(Num_neur//2,2,2,NW_theory, Wx_theory,tau_STDP,tau_r,tau_ou,c_x,aE,aI,sigma_p,sigma_s,tr[0],tr[1],normalize=normalize)
                     print('cov',cov_term)
                 if normalize:
                     dwdt[0,0] = (1 / tau_wee) * (tau_STDP*track_theory_E_lamb*(track_theory_E_lamb-b)+ cov_term[0,0])
@@ -356,7 +354,17 @@ def spiking_sim(normalize, axs,seed,c_x,sigma,ctt, tau_r, tau_ou,tau_STDP, tau_w
                     dwdt[0, 1] = -( 1 / tau_wei) * (tau_STDP*track_theory_I_lamb*(track_theory_E_lamb-b)+cov_term[0,1])
 
             tw = tw + dwdt[0,:] * dt
-            tr = tr + drdt * dt
+            r_vec = r_vec + drdt * dt
+            if normalize:
+                rx = rx + dt * (np.array([aE,aI]) * (time[t] > 0.) - rx) / tau_r
+            else:
+                rx = rx + dt * (np.array([aE,aI]) * (time[t] > 0.) - rx / tau_r)
+            NW_theory[0,0] = (N_E-1)*tw[0]
+            NW_theory[0,1] = N_I*tw[1]
+            if bernouilli:
+                tr = p * (NW_theory @ r_vec + Num_neur//2*Wx_theory @ rx)
+            else:
+                tr = NW_theory @ r_vec + Num_neur//2*Wx_theory @ rx
 
             if t%10000==0:
                 print('theory_weights[1,t]',tw[1],'theory_weights[0,t]',tw[0])
